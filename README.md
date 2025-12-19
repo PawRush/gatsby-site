@@ -34,3 +34,48 @@
 1. **Give Feedback.**
 
     I'm actively working to improve this website's accessibility and functionality. If you find something that could be improved, please [file an issue](./issues/new)!
+
+## 🌐 AWS Deployment
+
+This site is deployed on AWS using S3 + CloudFront. See `./deployment_plan.md` for deployment status and history.
+
+**Live Site:** https://d1ayimb380n433.cloudfront.net
+
+### Deploy to AWS
+
+Deploy to your personal preview environment:
+
+```sh
+NODE_OPTIONS=--openssl-legacy-provider ./scripts/deploy.sh
+```
+
+Deploy to other environments:
+
+```sh
+NODE_OPTIONS=--openssl-legacy-provider ./scripts/deploy.sh dev
+NODE_OPTIONS=--openssl-legacy-provider ./scripts/deploy.sh prod
+```
+
+### AWS Infrastructure
+
+- **S3 Bucket:** gatsbysitefrontend-preview-jairosp-763835214576
+- **CloudFront Distribution ID:** E13LJZT96EK968
+- **Region:** us-east-1
+- **IaC:** AWS CDK (TypeScript) in `./infra` directory
+
+### View Deployment Outputs
+
+```bash
+aws cloudformation describe-stacks \
+  --stack-name GatsbySiteFrontend-preview-$(whoami) \
+  --query 'Stacks[0].Outputs' \
+  --output table
+```
+
+### Cleanup
+
+To remove deployed resources:
+
+```bash
+cd infra && npx cdk destroy --all
+```
