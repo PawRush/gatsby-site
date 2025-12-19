@@ -1,0 +1,42 @@
+version: 0.2
+
+env:
+  variables:
+    NODE_OPTIONS: "--openssl-legacy-provider"
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: latest
+    commands:
+      - echo "Installing infra dependencies..."
+      - (cd infra && npm ci --legacy-peer-deps --prefer-offline --no-progress)
+
+  build:
+    commands:
+      - echo "Deploying frontend to production..."
+      - mkdir -p dist
+      - echo "Copying frontend build artifacts..."
+      - if [ -d "$CODEBUILD_SRC_DIR_FrontendBuildOutput/public" ]; then cp -r "$CODEBUILD_SRC_DIR_FrontendBuildOutput/public/"* dist/; fi
+      - echo "Building CDK stack..."
+      - (cd infra && npm run build)
+      - echo "Deploying with CDK..."
+      - (cd infra && npx cdk deploy GatsbySiteFrontend-prod --context environment=prod --context withAssets=false --require-approval never --progress events)
+      - echo "Getting deployment outputs..."
+      - BUCKET=$(aws cloudformation describe-stacks --stack-name GatsbySiteFrontend-prod --query 'Stacks[0].Outputs[?OutputKey==`BucketName`].OutputValue' --output text)
+      - DIST_ID=$(aws cloudformation describe-stacks --stack-name GatsbySiteFrontend-prod --query 'Stacks[0].Outputs[?OutputKey==`DistributionId`].OutputValue' --output text)
+      - echo "Frontend bucket:$BUCKET"
+      - echo "Distribution ID:$DIST_ID"
+      - echo "Syncing frontend to S3..."
+      - aws s3 sync dist/ s3://$BUCKET/ --delete --cache-control "max-age=31536000,public" --exclude ".git/*"
+      - echo "Invalidating CloudFront cache..."
+      - aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
+      - echo "Deployment complete!"
+
+post_build:
+  commands:
+    - echo "Deployment stage completed successfully"
+
+cache:
+  paths:
+    - "~/.npm/**/*"

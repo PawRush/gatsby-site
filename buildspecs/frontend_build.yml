@@ -1,0 +1,29 @@
+version: 0.2
+
+env:
+  variables:
+    NPM_CONFIG_PRODUCTION: "false"
+    NODE_OPTIONS: "--openssl-legacy-provider"
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: latest
+    commands:
+      - echo "Installing dependencies..."
+      - npm ci --legacy-peer-deps --prefer-offline --no-progress
+
+  build:
+    commands:
+      - echo "Building Gatsby frontend..."
+      - npm run build
+      - echo "Frontend build complete"
+
+artifacts:
+  files:
+    - "public/**/*"
+  name: FrontendBuildOutput
+
+cache:
+  paths:
+    - "~/.npm/**/*"
