@@ -1,7 +1,7 @@
 import React from 'react'
 import BodyClassName from 'react-body-classname'
 import { StaticQuery, graphql } from 'gatsby'
-import Img from 'gatsby-image'
+import { GatsbyImage, getImage } from 'gatsby-plugin-image'
 
 import RouteTargetHeading from "../components/route-target-heading"
 import Layout from '../components/layout'
@@ -12,16 +12,12 @@ const AboutPage = () => (
         query {
             portrait: file(relativePath: { eq: "marcy-cargo-bike.jpg" }) {
                 childImageSharp {
-                    fluid {
-                        ...GatsbyImageSharpFluid
-                    }
+                    gatsbyImageData(layout: FULL_WIDTH)
                 }
             }
             biking: file(relativePath: { eq: "deception-pass.jpg" }) {
                 childImageSharp {
-                    fluid {
-                        ...GatsbyImageSharpFluid
-                    }
+                    gatsbyImageData(layout: FULL_WIDTH)
                 }
             }
         }
@@ -53,7 +49,7 @@ const AboutPage = () => (
                             <p>Marcy Sutton Todd is a senior engineer, frontend infrastructure at Khan Academy where she works on design systems and accessibility. Previously as an independent web developer and trainer, Marcy launched the Testing Accessibility online workshop series in partnership with Egghead.io. Marcy has also worked on accessibility testing tools including axe-core, JavaScript frameworks, websites and web applications. Marcy’s focus on access and user experience was recognized by O’Reilly in 2016 with a Web Platform Award. When away from the keyboard, Marcy can be found hiking in the woods with her family, riding bicycles, lifting weights, or making yummy food.</p>
                         </section>
                         <aside className="page-post-aside breathing-room">
-                            <Img fluid={data.portrait.childImageSharp.fluid} alt="Me on my Riese and Mueller cargo bike, with a box containing a baby car seat in the front" />
+                            <GatsbyImage image={getImage(data.portrait)} alt="Me on my Riese and Mueller cargo bike, with a box containing a baby car seat in the front" />
                             <h2 style={{marginTop: `1em`}}>where to find me</h2>
                             <ul style={{marginBottom: `2em`}}>
                                 <li><a title="Link opens in a new window." href="http://www.linkedin.com/in/marcysutton/" target="_blank" rel="noopener noreferrer">linkedin<span className="visually-hidden"> Opens in a new window</span></a></li>
@@ -61,7 +57,7 @@ const AboutPage = () => (
                                 <li><a title="Link opens in a new window." href="https://twitter.com/marcysutton" target="_blank" rel="noopener noreferrer">twitter<span className="visually-hidden"> Opens in a new window</span></a></li>
                                 <li><a title="Link opens in a new window." href="https://github.com/marcysutton" target="_blank" rel="noopener noreferrer">github<span className="visually-hidden"> Opens in a new window</span></a></li>
                             </ul>
-                            <Img fluid={data.biking.childImageSharp.fluid} alt="Sun streaking through the trees at Deception Pass State Park" />
+                            <GatsbyImage image={getImage(data.biking)} alt="Sun streaking through the trees at Deception Pass State Park" />
                         </aside>
                     </div>
                 </Layout>

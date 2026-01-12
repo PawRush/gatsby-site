@@ -4,6 +4,7 @@ import ReactHtmlParser from 'react-html-parser'
 import PropTypes from "prop-types"
 import BodyClassName from 'react-body-classname'
 import { AllHtmlEntities } from 'html-entities'
+import { getSrc } from "gatsby-plugin-image"
 
 import RouteTargetHeading from "../components/route-target-heading"
 import SEO from '../components/seo'
@@ -14,7 +15,8 @@ class PostTemplate extends Component {
   render() {
     const post = this.props.data.markdownRemark
     const posts = this.props.data.allMarkdownRemark.edges
-    
+    const coverImageSrc = post.frontmatter.coverImage ? getSrc(post.frontmatter.coverImage) : null
+
     return (
       <BodyClassName className="post">
         <Layout pathname={this.props.pageContext.pathname}>
@@ -23,7 +25,7 @@ class PostTemplate extends Component {
             shortTitle={ AllHtmlEntities.decode(post.frontmatter.shortTitle) }
             description={ AllHtmlEntities.decode(post.frontmatter.excerpt) }
             keywords={['Marcy Sutton', 'MarcySutton.com', 'writing', 'posts', 'blog']}
-            image={ (post.frontmatter.coverImage && post.frontmatter.coverImage.childImageSharp.fixed.src) } />
+            image={coverImageSrc} />
             <div className="generic-wrap page-post-wrap">
               <section className="page-post-detail breathing-room">
                   <article>
@@ -65,9 +67,7 @@ export const pageQuery = graphql`
         title
         coverImage {
           childImageSharp {
-            fixed {
-              ...GatsbyImageSharpFixed
-            }
+            gatsbyImageData(layout: FIXED)
           }
         }
         shortTitle

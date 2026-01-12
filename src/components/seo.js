@@ -2,16 +2,19 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Helmet from 'react-helmet'
 import { StaticQuery, graphql } from 'gatsby'
+import { getSrc } from 'gatsby-plugin-image'
 
 function SEO({ description, lang, meta, keywords, image, title, player, shortTitle }) {
   return (
     <StaticQuery
       query={detailsQuery}
       render={data => {
+        const defaultImageSrc = getSrc(data.defaultImage)
+        const squareImageSrc = getSrc(data.squareImage)
         const seo = {
           description: description || data.site.siteMetadata.socialDescription,
-          image: `${data.site.siteMetadata.siteUrl }${image || data.defaultImage.childImageSharp.fixed.src}`,
-          fbImage: `${data.site.siteMetadata.siteUrl }${image || data.squareImage.childImageSharp.fixed.src}`
+          image: `${data.site.siteMetadata.siteUrl }${image || defaultImageSrc}`,
+          fbImage: `${data.site.siteMetadata.siteUrl }${image || squareImageSrc}`
         }
         const defaultTitle = data.site.siteMetadata.title
         const pageTitle = title ? `${title} | ${defaultTitle}` : defaultTitle
@@ -131,16 +134,12 @@ const detailsQuery = graphql`
     }
     defaultImage: file(relativePath: { eq: "ms-social-image-600.jpg" }) {
       childImageSharp {
-        fixed {
-          ...GatsbyImageSharpFixed
-        }
+        gatsbyImageData(layout: FIXED)
       }
     }
     squareImage: file(relativePath: { eq: "marcy-sutton-com.png" }) {
       childImageSharp {
-        fixed {
-          ...GatsbyImageSharpFixed
-        }
+        gatsbyImageData(layout: FIXED)
       }
     }
   }

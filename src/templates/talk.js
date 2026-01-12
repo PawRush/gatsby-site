@@ -4,6 +4,7 @@ import ReactHtmlParser from 'react-html-parser'
 import BodyClassName from 'react-body-classname'
 import PropTypes from "prop-types"
 import { AllHtmlEntities } from 'html-entities'
+import { getSrc } from "gatsby-plugin-image"
 
 import RouteTargetHeading from "../components/route-target-heading"
 import SEO from '../components/seo'
@@ -14,12 +15,13 @@ import Video from '../components/video'
 class TalkPageTemplate extends Component {
   render() {
     const talk = this.props.data.markdownRemark
+    const posterSrc = getSrc(talk.frontmatter.posterImg)
     return (
       <BodyClassName className="page">
         <Layout pathname={this.props.location.pathname}>
           <SEO title={ AllHtmlEntities.decode(talk.frontmatter.title) }
             player={talk.frontmatter.videoSrcURL}
-            image={talk.frontmatter.posterImg.childImageSharp.fluid.src}
+            image={posterSrc}
             keywords={['Marcy Sutton', 'MarcySutton.com', 'talks', 'blog']} />
           <section className="generic-wrap page-wrap breathing-room">
             <article>
@@ -59,9 +61,7 @@ export const pageQuery = graphql`
         videoTitle
         posterImg {
           childImageSharp {
-            fluid(maxWidth: 480) {
-              ...GatsbyImageSharpFluid
-            }
+            gatsbyImageData(width: 480, layout: CONSTRAINED)
           }
       }
       }

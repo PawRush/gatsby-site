@@ -1,6 +1,6 @@
 import React from 'react'
 import { graphql } from 'gatsby'
-import Img from 'gatsby-image'
+import { GatsbyImage, getImage } from 'gatsby-plugin-image'
 import BodyClassName from 'react-body-classname'
 
 import RouteTargetHeading from "../components/route-target-heading"
@@ -17,9 +17,9 @@ const LinksPage = ({ data }) => (
                     <RouteTargetHeading>
                         Links
                     </RouteTargetHeading>
-                    <Img
+                    <GatsbyImage
                         className="floating-image width50"
-                        fluid={data.linkPageImage.childImageSharp.fluid}
+                        image={getImage(data.linkPageImage)}
                         alt="Netmag layout: Marcy emceeing CascadiaFest in a Canadian Mounty costume with Matthew Claypotch on stage in a horse head"
                     />
                     <p>A list of blog posts and podcasts on other sites, either written by me or referencing me somehow.</p>
@@ -42,9 +42,7 @@ export const pageQuery = graphql`
   query {
     linkPageImage: file(relativePath: { eq: "cascadiafest-netmag.jpg" }) {
         childImageSharp {
-          fluid {
-            ...GatsbyImageSharpFluid
-          }
+          gatsbyImageData(layout: FULL_WIDTH)
         }
     }
     allLinksJson {

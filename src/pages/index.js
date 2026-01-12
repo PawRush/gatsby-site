@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import BodyClassName from 'react-body-classname'
 import { graphql, Link } from 'gatsby'
-import Img from 'gatsby-image'
+import { GatsbyImage, getImage } from 'gatsby-plugin-image'
 
 import Layout from '../components/layout'
 import SEO from '../components/seo'
@@ -23,7 +23,7 @@ class IndexPage extends Component {
             <div className="feature-list-wrap">
               <Feature
                 subhead="Latest:Feature"
-                image={data.featureImage.childImageSharp.fluid}
+                image={getImage(data.featureImage)}
                 imageAlt={data.feature.frontmatter.imageAlt}
                 title={data.feature.frontmatter.title}
                 description={data.feature.frontmatter.description}
@@ -64,7 +64,7 @@ class IndexPage extends Component {
                 listName="links"
                 linkNewWindow="true"
               />
-              <Img fluid={data.homepageImage.childImageSharp.fluid} alt="Marcy speaking at React Rally in 2016" />
+              <GatsbyImage image={getImage(data.homepageImage)} alt="Marcy speaking at React Rally in 2016" />
               <div className="retro-image"></div>
             </section>
 
@@ -81,9 +81,7 @@ export const pageQuery = graphql`
   query {
     homepageImage: file(relativePath: { eq: "react-rally-marcy-lg.jpg" }) {
       childImageSharp {
-        fluid {
-          ...GatsbyImageSharpFluid
-        }
+        gatsbyImageData(layout: FULL_WIDTH)
       }
     }
     feature: markdownRemark(fields: {slug: {regex: "/testing-accessibility/"}}) {
@@ -98,9 +96,7 @@ export const pageQuery = graphql`
     }
     featureImage: file(relativePath: { eq: "testing-accessibility-banner-2@2x.png" }) {
       childImageSharp {
-        fluid {
-          ...GatsbyImageSharpFluid
-        }
+        gatsbyImageData(layout: FULL_WIDTH)
       }
     }
     posts: allMarkdownRemark(
@@ -134,9 +130,7 @@ export const pageQuery = graphql`
             videoTitle
             posterImg {
               childImageSharp {
-                fluid {
-                  ...GatsbyImageSharpFluid
-                }
+                gatsbyImageData(layout: FULL_WIDTH)
               }
             }
           }
@@ -149,9 +143,7 @@ export const pageQuery = graphql`
         node {
           name
           childImageSharp {
-            fluid {
-              ...GatsbyImageSharpFluid
-            }
+            gatsbyImageData(layout: FULL_WIDTH)
           }
         }
       }
