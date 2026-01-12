@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import { graphql } from "gatsby"
-import ReactHtmlParser from 'react-html-parser'
+import parse from 'html-react-parser'
 import BodyClassName from 'react-body-classname'
 import PropTypes from "prop-types"
 import { getSrc } from "gatsby-plugin-image"
@@ -22,9 +22,9 @@ class FeatureTemplate extends Component {
           <section className="generic-wrap page-post-detail">
             <article>
                 <RouteTargetHeading targetID="global-nav">
-                  { ReactHtmlParser(page.frontmatter.title) }
+                  { parse(page.frontmatter.title) }
                 </RouteTargetHeading>
-                { ReactHtmlParser(page.html) }
+                { parse(page.html) }
             </article>
           </section>
         </Layout>

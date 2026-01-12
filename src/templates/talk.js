@@ -1,9 +1,9 @@
 import React, { Component } from "react"
 import { graphql } from "gatsby"
-import ReactHtmlParser from 'react-html-parser'
+import parse from 'html-react-parser'
 import BodyClassName from 'react-body-classname'
 import PropTypes from "prop-types"
-import { AllHtmlEntities } from 'html-entities'
+import { decode as htmlDecode } from 'html-entities'
 import { getSrc } from "gatsby-plugin-image"
 
 import RouteTargetHeading from "../components/route-target-heading"
@@ -19,18 +19,18 @@ class TalkPageTemplate extends Component {
     return (
       <BodyClassName className="page">
         <Layout pathname={this.props.location.pathname}>
-          <SEO title={ AllHtmlEntities.decode(talk.frontmatter.title) }
+          <SEO title={ htmlDecode(talk.frontmatter.title) }
             player={talk.frontmatter.videoSrcURL}
             image={posterSrc}
             keywords={['Marcy Sutton', 'MarcySutton.com', 'talks', 'blog']} />
           <section className="generic-wrap page-wrap breathing-room">
             <article>
               <RouteTargetHeading targetID="global-nav">
-                { ReactHtmlParser(talk.frontmatter.title) }
+                { parse(talk.frontmatter.title) }
               </RouteTargetHeading>
               <Video videoSrcURL={talk.frontmatter.videoSrcURL} videoTitle={talk.frontmatter.title} />
 
-              { ReactHtmlParser(talk.html) }
+              { parse(talk.html) }
 
               <footer aria-label="Breadcrumb">
                 <Breadcrumb url="talks" section="talks" />

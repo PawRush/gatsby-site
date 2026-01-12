@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import ReactHtmlParser from 'react-html-parser'
+import parse from 'html-react-parser'
 import { Link } from 'gatsby'
 import { GatsbyImage, getImage } from 'gatsby-plugin-image'
 
@@ -16,7 +16,7 @@ const MediaGrid = ({ className, subtitle, items, allItems, itemLabel, minItems =
           <Link to={ items.node.frontmatter.path }>
             <GatsbyImage image={getImage(items.node.frontmatter.posterImg)} alt="" />
             {
-              ReactHtmlParser(items.node.frontmatter.title)
+              parse(items.node.frontmatter.title)
             }
           </Link>
         </li>
