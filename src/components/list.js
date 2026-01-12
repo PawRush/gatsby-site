@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import ReactHtmlParser from 'react-html-parser'
+import parse from 'html-react-parser'
 import { Link } from 'gatsby'
 
 import MoreLink from './more-link'
@@ -25,9 +25,9 @@ const List = ({ className, listName, subtitle, items, pathname = '', allItems = 
                     target={ linkNewWindow ? '_blank' : null }
                     rel={ linkNewWindow ? 'noopener noreferrer' : null }
                     to={ items.node.frontmatter.path }>
-                  { ReactHtmlParser(items.node.frontmatter.title) }
+                  { parse(items.node.frontmatter.title) }
                 </Link>
-                { items.node.excerpt ? ReactHtmlParser(items.node.excerpt) : null }
+                { items.node.excerpt ? parse(items.node.excerpt) : null }
             </li>
             }) 
         }</ul>

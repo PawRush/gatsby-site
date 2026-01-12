@@ -48,9 +48,7 @@ export const query = graphql`
                 videoTitle
                 posterImg {
                     childImageSharp {
-                      fluid {
-                        ...GatsbyImageSharpFluid
-                      }
+                      gatsbyImageData(layout: FULL_WIDTH)
                     }
                 }
             }

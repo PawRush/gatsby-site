@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import ReactHtmlParser from 'react-html-parser'
+import parse from 'html-react-parser'
 
 import MoreLink from './more-link'
 
@@ -13,7 +13,7 @@ const LinkList = ({ className, listName, subtitle, items, allItems = false, link
                     target={ linkNewWindow ? '_blank' : null }
                     rel={ linkNewWindow ? 'noopener noreferrer' : null }
                     href={ items.node.link }>
-                  { ReactHtmlParser(items.node.name) }
+                  { parse(items.node.name) }
                 </a>
             </li>
             }) 

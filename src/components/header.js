@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import BackgroundImage from 'gatsby-background-image'
+import { getImage } from 'gatsby-plugin-image'
+import { convertToBgImage } from 'gbimage-bridge'
 
 const LogoType = ({ pathname }) => {
   const LogoLink = () => {
@@ -28,7 +30,7 @@ const LogoType = ({ pathname }) => {
       <div className="site-logo">
         <LogoLink />
       </div>
-    ) 
+    )
   }
 }
 const Header = ({ pathname }) => (
@@ -36,21 +38,20 @@ const Header = ({ pathname }) => (
       query {
         desktop: file(relativePath: { eq: "blurryWall-crop.jpg" }) {
           childImageSharp {
-            fluid(quality: 60, maxWidth: 4160) {
-              ...GatsbyImageSharpFluid_withWebp
-            }
+            gatsbyImageData(quality: 60, layout: FULL_WIDTH, formats: [AUTO, WEBP])
           }
         }
       }
     `}
      render={data => {
-       const imageData = data.desktop.childImageSharp.fluid
+       const image = getImage(data.desktop)
+       const bgImage = convertToBgImage(image)
        return (
           <header
             className="site-header"
             role="banner"
           >
-              <BackgroundImage className="header-bg" fluid={imageData}>
+              <BackgroundImage className="header-bg" {...bgImage}>
                 <ul className="skip-links">
                   <li><a href="#main" id="skip-link-main">Skip to main content</a></li>
                 </ul>

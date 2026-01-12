@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import ReactHtmlParser from 'react-html-parser'
+import parse from 'html-react-parser'
 import BodyClassName from 'react-body-classname'
 import PropTypes from "prop-types"
 
@@ -21,9 +21,9 @@ class PageTemplate extends Component {
           <section className="generic-wrap page-wrap">
             <article className="breathing-room">
                 <RouteTargetHeading targetID="global-nav">
-                  { ReactHtmlParser(page.title) }
+                  { parse(page.title) }
                 </RouteTargetHeading>
-                { ReactHtmlParser(page.content) }
+                { parse(page.content) }
             </article>
           </section>
         </Layout>
