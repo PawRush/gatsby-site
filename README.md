@@ -37,8 +37,18 @@
 
 ## Deployment
 
-Deployed at: https://d3co7n8suw52ey.cloudfront.net, using the [deploy-frontend-app] Agent Standard Operation Procedure from the [AWS MCP](https://docs.aws.amazon.com/aws-mcp/latest/userguide/what-is-mcp-server.html).
+### Production Deployment
 
-Deployment command: `./scripts/deploy.sh`
+Pipeline: https://us-east-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/GatsbySitePipeline/view
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for full details.
+Deploy: `git push origin deploy-to-aws`
+
+The pipeline automatically builds and deploys to production when you push to the `deploy-to-aws` branch.
+
+### Preview Deployment
+
+Preview URL: https://d3co7n8suw52ey.cloudfront.net
+
+Deploy preview: `./scripts/deploy.sh`
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for full details. Created with the [deploy-codepipeline] Agent Standard Operation Procedure from the [AWS MCP](https://docs.aws.amazon.com/aws-mcp/latest/userguide/what-is-mcp-server.html).
