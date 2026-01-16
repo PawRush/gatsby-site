@@ -11,7 +11,7 @@ base_path: /
 cloudfront_config: URL rewrite function (static multi-page)
 branch: deploy-to-aws
 created: 2026-01-16T16:18:00Z
-last_updated: 2026-01-16T16:24:00Z
+last_updated: 2026-01-16T16:33:00Z
 ---
 
 # Deployment Plan: GatsbySite
@@ -35,8 +35,8 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 - [x] Step 9: Validate CDK Synth
 
 ## Phase 3: Deploy and Validate
-- [ ] Step 10: Execute CDK Deployment
-- [ ] Step 11: Validate CloudFormation Stack
+- [x] Step 10: Execute CDK Deployment
+- [x] Step 11: Validate CloudFormation Stack
 
 ## Phase 4: Update Documentation
 - [ ] Step 12: Finalize Deployment Plan
@@ -44,12 +44,13 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 
 ## Deployment Info
 
-- Deployment URL: [pending]
-- Stack name: [pending]
-- Distribution ID: [pending]
-- S3 bucket names: [pending]
-- CloudFront log bucket: [pending]
-- S3 log bucket: [pending]
+- Deployment URL: https://d3co7n8suw52ey.cloudfront.net
+- Stack name: GatsbySiteFrontend-preview-sergeyka
+- Distribution ID: E34ZLTRCJA36XY
+- S3 bucket name: gatsbysitefrontend-preview--cftos3s3bucketcae9f2be-jzhcw3r57mcx
+- CloudFront log bucket: gatsbysitefrontend-previe-cftos3cloudfrontloggingb-abx9zd0mvyyr
+- S3 log bucket: gatsbysitefrontend-previe-cftos3s3loggingbucket64b-synbd112c83a
+- Deployment timestamp: 2026-01-16T16:32:58Z
 
 ## Recovery Guide
 
