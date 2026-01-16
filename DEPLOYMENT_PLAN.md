@@ -40,12 +40,14 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 
 ## Pipeline Info
 
-- Pipeline name: [pending]
-- Pipeline URL: [pending]
+- Pipeline name: GatsbySitePipeline
+- Pipeline URL: https://us-east-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/GatsbySitePipeline/view
+- Pipeline ARN: arn:aws:codepipeline:us-east-1:126593893432:GatsbySitePipeline
 - CodeConnection ARN: arn:aws:codeconnections:us-east-1:126593893432:connection/c140aa0c-7407-42c9-aa4b-7c81f5faf40b
-- Source repository: [pending]
-- Source branch: [pending]
-- Quality checks: [pending]
+- Source repository: PawRush/gatsby-site
+- Source branch: deploy-to-aws
+- Quality checks: None (secretlint only, no lint/test - E2E tests excluded)
+- Deployment timestamp: 2026-01-16T16:41:13Z
 
 ## Recovery Guide
 

@@ -16,11 +16,11 @@ last_updated: 2026-01-16T16:33:00Z
 
 # Deployment Summary
 
-Your app is deployed to AWS with a 'preview' URL that doesn't change when you update GitHub. Share this link with others.
+Your app has a CodePipeline that automatically deploys changes from the `deploy-to-aws` branch. Push to this branch to trigger deployments.
 
-To connect deployments to GitHub changes, ask your coding agent to `setup a AWS CodePipeline`.
+Pipeline console: https://us-east-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/GatsbySitePipeline/view
 
-Services used: CloudFront, S3, CloudFormation, IAM
+Services used: CodePipeline, CodeBuild, CodeConnections, CloudFront, S3, CloudFormation, IAM
 
 Questions? Ask your Coding Agent:
  - What resources were deployed to AWS?
@@ -29,17 +29,23 @@ Questions? Ask your Coding Agent:
 ## Quick Commands
 
 ```bash
-# View deployment status
-aws cloudformation describe-stacks --stack-name "GatsbySiteFrontend-preview-sergeyka" --query 'Stacks[0].StackStatus' --output text --no-cli-pager
+# View pipeline status
+aws codepipeline get-pipeline-state --name "GatsbySitePipeline" --query 'stageStates[*].[stageName,latestExecution.status]' --output table --no-cli-pager
 
-# Invalidate CloudFront cache
-aws cloudfront create-invalidation --distribution-id "E34ZLTRCJA36XY" --paths "/*" --no-cli-pager
+# View build logs
+aws logs tail "/aws/codebuild/GatsbySitePipelineStack-Synth" --follow --no-cli-pager
 
-# View CloudFront access logs (last hour)
-aws s3 ls "s3://gatsbysitefrontend-previe-cftos3cloudfrontloggingb-abx9zd0mvyyr/" --recursive | tail -20
+# Trigger pipeline manually
+aws codepipeline start-pipeline-execution --name "GatsbySitePipeline" --no-cli-pager
 
-# Redeploy
+# Deploy preview environment manually
 ./scripts/deploy.sh
+
+# View production deployment status
+aws cloudformation describe-stacks --stack-name "GatsbySiteFrontend-prod" --query 'Stacks[0].StackStatus' --output text --no-cli-pager
+
+# Invalidate production CloudFront cache (after pipeline deploys)
+aws cloudfront create-invalidation --distribution-id "<prod-distribution-id>" --paths "/*" --no-cli-pager
 ```
 
 ## Production Readiness
