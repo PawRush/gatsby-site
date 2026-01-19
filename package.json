@@ -47,10 +47,7 @@
     "develop": "gatsby develop",
     "start": "npm run develop",
     "format": "prettier --write \"src/**/*.js\"",
-    "test": "playwright test",
-    "test:chromium": "playwright test --project=chromium",
-    "test:headed": "playwright test --headed",
-    "test:debug": "playwright test --debug"
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
