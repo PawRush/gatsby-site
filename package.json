@@ -44,6 +44,7 @@
   "scripts": {
     "prebuild": "rm -rf public/ .cache/",
     "build": "gatsby build",
+    "predevelop": "mkdir -p .cache",
     "develop": "gatsby develop",
     "start": "npm run develop",
     "format": "prettier --write \"src/**/*.js\"",
