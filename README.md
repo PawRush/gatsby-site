@@ -37,8 +37,23 @@
 
 ## Deployment
 
-Deployed at: https://dg2p7mr8jna6f.cloudfront.net, using the [deploy-frontend-app] Agent Standard Operation Procedure from the [AWS MCP](https://docs.aws.amazon.com/aws-mcp/latest/userguide/what-is-mcp-server.html).
+**Preview**: https://dg2p7mr8jna6f.cloudfront.net
+**Pipeline**: [MarcySitePipeline](https://us-east-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/MarcySitePipeline/view)
 
-Deployment command: `./scripts/deploy.sh`
+### Automated Deployment
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for full details.
+Push to `deploy-to-aws-20260127_182622-sergeyka` branch to trigger automatic deployment:
+
+```bash
+git push origin deploy-to-aws-20260127_182622-sergeyka
+```
+
+### Manual Deployment
+
+For preview environments:
+
+```bash
+./scripts/deploy.sh
+```
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for full details. Created with the [deploy-frontend-app] and [setup-pipeline] Agent Standard Operation Procedures from the [AWS MCP](https://docs.aws.amazon.com/aws-mcp/latest/userguide/what-is-mcp-server.html).
