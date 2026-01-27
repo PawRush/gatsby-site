@@ -11,7 +11,9 @@
     "cdk": "cdk",
     "deploy": "npm run deploy:preview",
     "deploy:preview": "cdk deploy --all --require-approval never --progress events",
+    "deploy:pipeline": "cdk deploy GatsbySitePipelineStack --context codeConnectionArn=arn:aws:codeconnections:us-east-1:126593893432:connection/c140aa0c-7407-42c9-aa4b-7c81f5faf40b --context repositoryName=PawRush/gatsby-site --context branchName=deploy-to-aws --require-approval never --progress events",
     "destroy": "cdk destroy --all",
+    "destroy:pipeline": "cdk destroy GatsbySitePipelineStack --context codeConnectionArn=arn:aws:codeconnections:us-east-1:126593893432:connection/c140aa0c-7407-42c9-aa4b-7c81f5faf40b",
     "synth": "cdk synth",
     "diff": "cdk diff"
   },
