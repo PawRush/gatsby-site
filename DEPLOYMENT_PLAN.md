@@ -5,7 +5,7 @@ app_name: GatsbySite
 app_type: Frontend Application (Gatsby Static Site)
 branch: deploy-to-aws
 created: 2026-01-27T11:33:00Z
-last_updated: 2026-01-27T11:40:00Z
+last_updated: 2026-01-27T11:49:00Z
 ---
 
 # Deployment Plan: GatsbySite
@@ -41,8 +41,8 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 - [x] Step 9: Validate CDK Synth
 
 ## Phase 3: Deploy and Validate
-- [ ] Step 10: Execute CDK Deployment
-- [ ] Step 11: Validate CloudFormation Stack
+- [x] Step 10: Execute CDK Deployment
+- [x] Step 11: Validate CloudFormation Stack
 
 ## Phase 4: Update Documentation
 - [ ] Step 12: Finalize Deployment Plan
@@ -50,12 +50,14 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 
 ## Deployment Info
 
-- Deployment URL: [after completion]
-- Stack name: [after creation]
-- Distribution ID: [after creation]
-- S3 Bucket: [after creation]
-- CloudFront Log Bucket: [after creation]
-- S3 Log Bucket: [after creation]
+- Deployment URL: https://d1bjsy0hdu82pb.cloudfront.net
+- Stack name: GatsbySiteFrontend-preview-sergeyka
+- Distribution ID: E3MOOA81CTWZZG
+- Distribution Domain: d1bjsy0hdu82pb.cloudfront.net
+- S3 Bucket: gatsbysitefrontend-preview--cftos3s3bucketcae9f2be-lizsgmlm98ch
+- CloudFront Log Bucket: gatsbysitefrontend-previe-cftos3cloudfrontloggingb-sexorbwwdych
+- S3 Log Bucket: gatsbysitefrontend-previe-cftos3s3loggingbucket64b-kubcrge67qnr
+- Deployment Date: 2026-01-27T11:48:14Z
 
 ## Recovery Guide
 
@@ -75,5 +77,5 @@ None.
 
 ### Session 1 - 2026-01-27T11:33:00Z
 Agent: Claude Sonnet 4.5
-Progress: Phase 1 & 2 complete - CDK infrastructure built, synth validated
-Next: Execute CDK deployment
+Progress: Phase 1, 2 & 3 complete - Successfully deployed to AWS CloudFront
+Next: Finalize documentation
