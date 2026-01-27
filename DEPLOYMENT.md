@@ -10,13 +10,17 @@ last_updated: 2026-01-27T11:49:00Z
 
 # Deployment Summary
 
-Your app is deployed to AWS! Preview URL: https://d1bjsy0hdu82pb.cloudfront.net
+Your app is deployed to AWS with automated CI/CD!
 
-**Next Step: Automate Deployments**
+**Production URL:** Will be available once pipeline completes (first deployment in progress)
 
-You're currently using manual deployment. To automate deployments from GitHub, ask your coding agent to set up AWS CodePipeline using an agent SOP for pipeline creation. Try: "create a pipeline using AWS SOPs"
+**Preview URL:** https://d1bjsy0hdu82pb.cloudfront.net (manual deployment)
 
-Services used: CloudFront, S3, CloudFormation, IAM
+**Pipeline:** https://us-east-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/GatsbySitePipeline/view
+
+**Deployment Method:** Push to `deploy-to-aws` branch triggers automatic deployment
+
+Services used: CodePipeline, CodeBuild, CodeConnections, CloudFront, S3, CloudFormation, IAM
 
 Questions? Ask your Coding Agent:
 - What resources were deployed to AWS?
@@ -25,16 +29,22 @@ Questions? Ask your Coding Agent:
 ## Quick Commands
 
 ```bash
-# View deployment status
-aws cloudformation describe-stacks --stack-name "GatsbySiteFrontend-preview-sergeyka" --query 'Stacks[0].StackStatus' --output text
+# Check pipeline status
+aws codepipeline get-pipeline-state --name "GatsbySitePipeline" --query 'stageStates[*].{Stage:stageName,Status:latestExecution.status}' --output table
 
-# Invalidate CloudFront cache
-aws cloudfront create-invalidation --distribution-id "E3MOOA81CTWZZG" --paths "/*"
+# View build logs
+aws logs tail "/aws/codebuild/GatsbySitePipeline-selfupdate" --follow
 
-# View CloudFront access logs (last hour)
-aws s3 ls "s3://gatsbysitefrontend-previe-cftos3cloudfrontloggingb-sexorbwwdych/" --recursive | tail -20
+# Trigger pipeline manually
+aws codepipeline start-pipeline-execution --name "GatsbySitePipeline"
 
-# Redeploy
+# View production stack status
+aws cloudformation describe-stacks --stack-name "GatsbySiteFrontend-prod" --query 'Stacks[0].StackStatus' --output text
+
+# Deploy to production (automatic via pipeline)
+git push origin deploy-to-aws
+
+# Manual preview deployment (bypasses pipeline)
 ./scripts/deploy.sh
 ```
 

@@ -6,6 +6,12 @@ This file provides guidance for AI coding agents working on this project.
 
 See `./DEPLOYMENT.md` for deployment status, logs, troubleshooting, pipeline setup, and next steps.
 
-The site is deployed to AWS CloudFront at: https://d1bjsy0hdu82pb.cloudfront.net
+**Automated Deployment:** Push to `deploy-to-aws` branch triggers CodePipeline
 
-To redeploy: `./scripts/deploy.sh`
+**Preview URL:** https://d1bjsy0hdu82pb.cloudfront.net (manual deployment)
+
+**Production URL:** Deployed via pipeline to `GatsbySiteFrontend-prod` stack
+
+**Pipeline:** https://us-east-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/GatsbySitePipeline/view
+
+**Manual deployment (preview only):** `./scripts/deploy.sh`
