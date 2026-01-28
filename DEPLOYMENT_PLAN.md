@@ -29,8 +29,8 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 - [x] Step 9: Validate CDK Synth
 
 ## Phase 3: Deploy and Validate
-- [ ] Step 10: Execute CDK Deployment
-- [ ] Step 11: Validate CloudFormation Stack
+- [x] Step 10: Execute CDK Deployment
+- [x] Step 11: Validate CloudFormation Stack
 
 ## Phase 4: Update Documentation
 - [ ] Step 12: Finalize Deployment Plan
@@ -42,10 +42,13 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 - Package Manager: npm
 - Build Command: npm run build
 - Output Directory: public/
-- Deployment URL: [after completion]
-- Stack name: [after creation]
-- Distribution ID: [after creation]
-- S3 Bucket: [after creation]
+- Deployment URL: https://d2xdyoerq6gogv.cloudfront.net
+- Stack name: MarcySuttonFrontend-preview-sergeyka
+- Distribution ID: E21YYKH3MHQUVB
+- S3 Bucket: marcysuttonfrontend-preview-cftos3s3bucketcae9f2be-2zxrly4lavwi
+- CloudFront Log Bucket: marcysuttonfrontend-previ-cftos3cloudfrontloggingb-2emm05fzpxzh
+- S3 Log Bucket: marcysuttonfrontend-previ-cftos3s3loggingbucket64b-zcrmrczvn0xg
+- Deployment Timestamp: 2026-01-28T13:35:37Z
 
 ## Recovery Guide
 
