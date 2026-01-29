@@ -1,11 +1,12 @@
 ---
-sop_name: deploy-frontend-app
+sop_name: setup-pipeline
 repo_name: gatsby-site
 app_name: Marcy
-app_type: Frontend Application - Gatsby Static Site
+app_type: CI/CD Pipeline for Frontend Application
 branch: deploy-to-aws-20260129_231512-sergeyka
 created: 2026-01-29T23:18:00Z
-last_updated: 2026-01-29T23:34:00Z
+last_updated: 2026-01-29T23:37:00Z
+code_connection_arn: arn:aws:codeconnections:us-east-1:126593893432:connection/c140aa0c-7407-42c9-aa4b-7c81f5faf40b
 ---
 
 # Deployment Plan: MarcySutton.com
@@ -36,6 +37,23 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 - [x] Step 12: Finalize Deployment Plan
 - [x] Step 13: Update README.md
 
+## Pipeline Setup (setup-pipeline SOP)
+
+### Phase 1: Gather Context and Configure
+- [x] Step 0: Inform User of Execution Flow
+- [x] Step 1: Update Deployment Plan
+- [x] Step 2: Detect Existing Infrastructure (confirmed: Marcy, PawRush/gatsby-site, no quality checks)
+
+### Phase 2: Build and Deploy Pipeline
+- [ ] Step 3: Create CDK Pipeline Stack
+- [ ] Step 4: CDK Bootstrap
+- [ ] Step 5: Deploy Pipeline
+- [ ] Step 6: Monitor Pipeline
+
+### Phase 3: Documentation
+- [ ] Step 7: Finalize Deployment Plan
+- [ ] Step 8: Update README.md
+
 ## Deployment Info
 
 - Deployment URL: https://d3s0ljhye4s84z.cloudfront.net
@@ -44,6 +62,14 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 - S3 Bucket Name: marcyfrontend-preview-serge-cftos3s3bucketcae9f2be-w6rqhpilgpfx
 - CloudFront Log Bucket: marcyfrontend-preview-ser-cftos3cloudfrontloggingb-zgngewad7psk
 - S3 Log Bucket: marcyfrontend-preview-ser-cftos3s3loggingbucket64b-6l62mygdonbn
+
+## Pipeline Info
+
+- CodeConnection ARN: arn:aws:codeconnections:us-east-1:126593893432:connection/c140aa0c-7407-42c9-aa4b-7c81f5faf40b
+- Repository: PawRush/gatsby-site
+- Branch: deploy-to-aws-20260129_231512-sergeyka
+- Pipeline Name: MarcyPipeline
+- Pipeline Stack: MarcyPipelineStack
 
 ## Recovery Guide
 
