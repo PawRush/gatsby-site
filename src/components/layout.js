@@ -14,36 +14,37 @@ const Layout = ({ children, pathname }) => (
       query SiteTitleQuery {
         site {
           siteMetadata {
-            title,
+            title
             description
           }
         }
       }
     `}
-    render={data => (
+    render={(data) => (
       <div id="site-wrap">
-        <Header
-          siteTitle={data.site.siteMetadata.title}
-          pathname={pathname}
-        />
-        <svg style={{
-          position: `absolute`,
-          width: `0`,
-          height: `0`,
-          overflow: `hidden`
-         }}
-         aria-hidden="true" focusable="false">
+        <Header siteTitle={data.site.siteMetadata.title} pathname={pathname} />
+        <svg
+          style={{
+            position: `absolute`,
+            width: `0`,
+            height: `0`,
+            overflow: `hidden`,
+          }}
+          aria-hidden="true"
+          focusable="false"
+        >
           <defs>
-          <symbol id="icon-triangle-right" width="1024" height="1024" viewBox="0 0 1024 1024">
-            <path d="M1024 512l-921.6 512v-1024l921.6 512z"></path>
+            <symbol
+              id="icon-triangle-right"
+              width="1024"
+              height="1024"
+              viewBox="0 0 1024 1024"
+            >
+              <path d="M1024 512l-921.6 512v-1024l921.6 512z"></path>
             </symbol>
           </defs>
         </svg>
-        <main
-          id="main"
-          role="main"
-          tabIndex="-1"
-        >
+        <main id="main" role="main" tabIndex="-1">
           {children}
         </main>
         <Footer />

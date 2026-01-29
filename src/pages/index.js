@@ -19,58 +19,80 @@ class IndexPage extends Component {
     return (
       <BodyClassName className="home">
         <Layout pathname={this.props.location.pathname}>
-          <SEO title="Home" keywords={['Marcy Sutton', 'MarcySutton.com', 'accessibility developer advocate', 'independent UI development consultant', 'freelance web developer', 'accessibility specialist']} />
-            <div className="feature-list-wrap">
-              <Feature
-                subhead="Latest:Feature"
-                image={getImage(data.featureImage)}
-                imageAlt={data.feature.frontmatter.imageAlt}
-                title={data.feature.frontmatter.title}
-                description={data.feature.frontmatter.description}
-                extendedDescription={data.feature.frontmatter.extendedDescription}
-                path={data.feature.frontmatter.path}
-              />
-              <div className="home-aside">
-                <div className="service-tagline breathing-room">
-                  <h2>I’m a senior web developer with a specialty in frontend accessibility.</h2>
-                  <p>Learn <Link to="/about">about my work</Link>.</p>
-                </div>
-                <List
-                  className="list-writing-home breathing-room"
-                  subtitle="Latest:Writing"
-                  items={data.posts.edges}
-                  listName="writing"
-                />
+          <SEO
+            title="Home"
+            keywords={[
+              'Marcy Sutton',
+              'MarcySutton.com',
+              'accessibility developer advocate',
+              'independent UI development consultant',
+              'freelance web developer',
+              'accessibility specialist',
+            ]}
+          />
+          <div className="feature-list-wrap">
+            <Feature
+              subhead="Latest:Feature"
+              image={getImage(data.featureImage)}
+              imageAlt={data.feature.frontmatter.imageAlt}
+              title={data.feature.frontmatter.title}
+              description={data.feature.frontmatter.description}
+              extendedDescription={data.feature.frontmatter.extendedDescription}
+              path={data.feature.frontmatter.path}
+            />
+            <div className="home-aside">
+              <div className="service-tagline breathing-room">
+                <h2>
+                  I’m a senior web developer with a specialty in frontend
+                  accessibility.
+                </h2>
+                <p>
+                  Learn <Link to="/about">about my work</Link>.
+                </p>
               </div>
+              <List
+                className="list-writing-home breathing-room"
+                subtitle="Latest:Writing"
+                items={data.posts.edges}
+                listName="writing"
+              />
             </div>
+          </div>
 
-            <NewsletterForm className="home breathing-room" />
+          <NewsletterForm className="home breathing-room" />
 
-            <section aria-label="talks">
-              <MediaGrid
-                className="media-talks-home"
-                subtitle="I've spoken at some conferences:"
-                items={data.talks.edges}
-                itemLabel="talks"
-              />
-            </section>
+          <section aria-label="talks">
+            <MediaGrid
+              className="media-talks-home"
+              subtitle="I've spoken at some conferences:"
+              items={data.talks.edges}
+              itemLabel="talks"
+            />
+          </section>
 
-            <section className="list-image-wrap" aria-label="links">
-              <LinkList
-                className="list-links-home breathing-room"
-                subtitle="Latest:Professional"
-                subhead="Latest:Professional"
-                items={data.allLinksJson.edges}
-                listName="links"
-                linkNewWindow="true"
-              />
-              <GatsbyImage image={getImage(data.homepageImage)} alt="Marcy speaking at React Rally in 2016" />
-              <div className="retro-image"></div>
-            </section>
+          <section className="list-image-wrap" aria-label="links">
+            <LinkList
+              className="list-links-home breathing-room"
+              subtitle="Latest:Professional"
+              subhead="Latest:Professional"
+              items={data.allLinksJson.edges}
+              listName="links"
+              linkNewWindow="true"
+            />
+            <GatsbyImage
+              image={getImage(data.homepageImage)}
+              alt="Marcy speaking at React Rally in 2016"
+            />
+            <div className="retro-image"></div>
+          </section>
 
-            <section aria-label="Photos">
-              <ImageGrid subtitle="Photo gallery" className="media-photos-home" images={data.gallery.edges} />
-            </section>
+          <section aria-label="Photos">
+            <ImageGrid
+              subtitle="Photo gallery"
+              className="media-photos-home"
+              images={data.gallery.edges}
+            />
+          </section>
         </Layout>
       </BodyClassName>
     )
@@ -84,7 +106,9 @@ export const pageQuery = graphql`
         gatsbyImageData(layout: FULL_WIDTH)
       }
     }
-    feature: markdownRemark(fields: {slug: {regex: "/testing-accessibility/"}}) {
+    feature: markdownRemark(
+      fields: { slug: { regex: "/testing-accessibility/" } }
+    ) {
       id
       frontmatter {
         title
@@ -94,15 +118,20 @@ export const pageQuery = graphql`
         imageAlt
       }
     }
-    featureImage: file(relativePath: { eq: "testing-accessibility-banner-2@2x.png" }) {
+    featureImage: file(
+      relativePath: { eq: "testing-accessibility-banner-2@2x.png" }
+    ) {
       childImageSharp {
         gatsbyImageData(layout: FULL_WIDTH)
       }
     }
     posts: allMarkdownRemark(
-      limit: 6,
-      sort: { order: DESC, fields: [frontmatter___date] },
-      filter: {fileAbsolutePath: {regex: "/posts/"}, frontmatter: { homeList: { ne: false } }}
+      limit: 6
+      sort: { order: DESC, fields: [frontmatter___date] }
+      filter: {
+        fileAbsolutePath: { regex: "/posts/" }
+        frontmatter: { homeList: { ne: false } }
+      }
     ) {
       edges {
         node {
@@ -119,7 +148,7 @@ export const pageQuery = graphql`
     talks: allMarkdownRemark(
       limit: 6
       sort: { order: DESC, fields: [frontmatter___date] }
-      filter: {fileAbsolutePath: {regex: "/talk-videos/"}}
+      filter: { fileAbsolutePath: { regex: "/talk-videos/" } }
     ) {
       edges {
         node {
@@ -148,9 +177,7 @@ export const pageQuery = graphql`
         }
       }
     }
-    allLinksJson (
-      limit: 7
-    ) {
+    allLinksJson(limit: 7) {
       edges {
         node {
           id

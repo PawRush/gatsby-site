@@ -45,8 +45,8 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 - [x] Step 2: Detect Existing Infrastructure (confirmed: Marcy, PawRush/gatsby-site, no quality checks)
 
 ### Phase 2: Build and Deploy Pipeline
-- [ ] Step 3: Create CDK Pipeline Stack
-- [ ] Step 4: CDK Bootstrap
+- [x] Step 3: Create CDK Pipeline Stack
+- [x] Step 4: CDK Bootstrap (already bootstrapped from previous deployment)
 - [ ] Step 5: Deploy Pipeline
 - [ ] Step 6: Monitor Pipeline
 

@@ -1,9 +1,9 @@
-import React, { Component } from "react"
+import React, { Component } from 'react'
 import parse from 'html-react-parser'
 import BodyClassName from 'react-body-classname'
-import PropTypes from "prop-types"
+import PropTypes from 'prop-types'
 
-import RouteTargetHeading from "../components/route-target-heading"
+import RouteTargetHeading from '../components/route-target-heading'
 import SEO from '../components/seo'
 import Layout from '../components/layout'
 
@@ -11,19 +11,28 @@ class PageTemplate extends Component {
   render() {
     const page = {
       title: '',
-      content: ''
+      content: '',
     }
-    
+
     return (
       <BodyClassName className="page">
         <Layout pathname={this.props.location.pathname}>
-          <SEO title={ page.title } keywords={['Marcy Sutton', 'MarcySutton.com', 'writing', 'pages', 'blog']} />
+          <SEO
+            title={page.title}
+            keywords={[
+              'Marcy Sutton',
+              'MarcySutton.com',
+              'writing',
+              'pages',
+              'blog',
+            ]}
+          />
           <section className="generic-wrap page-wrap">
             <article className="breathing-room">
-                <RouteTargetHeading targetID="global-nav">
-                  { parse(page.title) }
-                </RouteTargetHeading>
-                { parse(page.content) }
+              <RouteTargetHeading targetID="global-nav">
+                {parse(page.title)}
+              </RouteTargetHeading>
+              {parse(page.content)}
             </article>
           </section>
         </Layout>

@@ -9,8 +9,7 @@ import { convertToBgImage } from 'gbimage-bridge'
 const LogoType = ({ pathname }) => {
   const LogoLink = () => {
     return (
-      <Link to="/" id="top" tabIndex="-1"
-    >
+      <Link to="/" id="top" tabIndex="-1">
         <span className="logotype-line1">Marcy</span>
         <span className="logotype-line2">Sutton</span>
         <span className="logotype-line3">.com</span>
@@ -19,9 +18,7 @@ const LogoType = ({ pathname }) => {
   }
   if (pathname === '/') {
     return (
-      <h1
-        id="routeSkipLink"
-        className="site-logo">
+      <h1 id="routeSkipLink" className="site-logo">
         <LogoLink />
       </h1>
     )
@@ -34,51 +31,91 @@ const LogoType = ({ pathname }) => {
   }
 }
 const Header = ({ pathname }) => (
-  <StaticQuery query={graphql`
+  <StaticQuery
+    query={graphql`
       query {
         desktop: file(relativePath: { eq: "blurryWall-crop.jpg" }) {
           childImageSharp {
-            gatsbyImageData(quality: 60, layout: FULL_WIDTH, formats: [AUTO, WEBP])
+            gatsbyImageData(
+              quality: 60
+              layout: FULL_WIDTH
+              formats: [AUTO, WEBP]
+            )
           }
         }
       }
     `}
-     render={data => {
-       const image = getImage(data.desktop)
-       const bgImage = convertToBgImage(image)
-       return (
-          <header
-            className="site-header"
-            role="banner"
-          >
-              <BackgroundImage className="header-bg" {...bgImage}>
-                <ul className="skip-links">
-                  <li><a href="#main" id="skip-link-main">Skip to main content</a></li>
+    render={(data) => {
+      const image = getImage(data.desktop)
+      const bgImage = convertToBgImage(image)
+      return (
+        <header className="site-header" role="banner">
+          <BackgroundImage className="header-bg" {...bgImage}>
+            <ul className="skip-links">
+              <li>
+                <a href="#main" id="skip-link-main">
+                  Skip to main content
+                </a>
+              </li>
+            </ul>
+            <div className="nav-wrap">
+              <LogoType pathname={pathname} />
+              <nav id="global-nav" aria-label="Global" tabIndex="-1">
+                <ul>
+                  <li>
+                    <Link to="/" activeClassName="active">
+                      Home
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/about/" activeClassName="active">
+                      About
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/writing/"
+                      activeClassName="active"
+                      className={
+                        pathname && pathname.indexOf('post') > -1
+                          ? 'active'
+                          : null
+                      }
+                    >
+                      Writing
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/talks/"
+                      activeClassName="active"
+                      className={
+                        pathname && pathname.indexOf('talk') > -1
+                          ? 'active'
+                          : null
+                      }
+                    >
+                      Talks
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/links/" activeClassName="active">
+                      Links
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/contact/" activeClassName="active">
+                      Contact
+                    </Link>
+                  </li>
+                  {/* <li><Link to="/search/" activeClassName="active">Search</Link></li> */}
                 </ul>
-                <div className="nav-wrap">
-                  <LogoType pathname={pathname} />
-                  <nav id="global-nav" aria-label="Global" tabIndex="-1">
-                    <ul>
-                      <li><Link to="/" activeClassName="active">Home</Link></li>
-                      <li><Link to="/about/" activeClassName="active">About</Link></li>
-                      <li><Link to="/writing/" activeClassName="active" className={pathname && pathname.indexOf('post') > -1 ? 'active' : null}>
-                        Writing</Link>
-                      </li>
-                      <li>
-                        <Link to="/talks/" activeClassName="active" className={pathname && pathname.indexOf('talk') > -1 ? 'active' : null}>
-                        Talks</Link>
-                      </li>
-                      <li><Link to="/links/" activeClassName="active">Links</Link></li>
-                      <li><Link to="/contact/" activeClassName="active">Contact</Link></li>
-                      {/* <li><Link to="/search/" activeClassName="active">Search</Link></li> */}
-                    </ul>
-                  </nav>
-                </div>
-              </BackgroundImage>
-          </header>
-       )
-     }
-    }
+              </nav>
+            </div>
+          </BackgroundImage>
+        </header>
+      )
+    }}
   />
 )
 

@@ -3,37 +3,42 @@ import { graphql } from 'gatsby'
 import { GatsbyImage, getImage } from 'gatsby-plugin-image'
 import BodyClassName from 'react-body-classname'
 
-import RouteTargetHeading from "../components/route-target-heading"
+import RouteTargetHeading from '../components/route-target-heading'
 import Layout from '../components/layout'
 import SEO from '../components/seo'
 import LinkList from '../components/link-list'
 
 const LinksPage = ({ data }) => (
-    <BodyClassName className="page">
-        <Layout>
-            <SEO title="Links" keywords={['Marcy Sutton', 'links', 'web developer']} />
-            <section className="generic-wrap">
-                <div className="breathing-room">
-                    <RouteTargetHeading>
-                        Links
-                    </RouteTargetHeading>
-                    <GatsbyImage
-                        className="floating-image width50"
-                        image={getImage(data.linkPageImage)}
-                        alt="Netmag layout: Marcy emceeing CascadiaFest in a Canadian Mounty costume with Matthew Claypotch on stage in a horse head"
-                    />
-                    <p>A list of blog posts and podcasts on other sites, either written by me or referencing me somehow.</p>
-                    <p>All links open in new windows.</p>
-                    <LinkList 
-                        className="list-links no-background"
-                        items={ data.allLinksJson.edges }
-                        listName="links"
-                        allItems="true"
-                        linkNewWindow="true" />
-                </div>
-            </section>
-        </Layout>
-    </BodyClassName>
+  <BodyClassName className="page">
+    <Layout>
+      <SEO
+        title="Links"
+        keywords={['Marcy Sutton', 'links', 'web developer']}
+      />
+      <section className="generic-wrap">
+        <div className="breathing-room">
+          <RouteTargetHeading>Links</RouteTargetHeading>
+          <GatsbyImage
+            className="floating-image width50"
+            image={getImage(data.linkPageImage)}
+            alt="Netmag layout: Marcy emceeing CascadiaFest in a Canadian Mounty costume with Matthew Claypotch on stage in a horse head"
+          />
+          <p>
+            A list of blog posts and podcasts on other sites, either written by
+            me or referencing me somehow.
+          </p>
+          <p>All links open in new windows.</p>
+          <LinkList
+            className="list-links no-background"
+            items={data.allLinksJson.edges}
+            listName="links"
+            allItems="true"
+            linkNewWindow="true"
+          />
+        </div>
+      </section>
+    </Layout>
+  </BodyClassName>
 )
 /* 
     
@@ -41,18 +46,18 @@ const LinksPage = ({ data }) => (
 export const pageQuery = graphql`
   query {
     linkPageImage: file(relativePath: { eq: "cascadiafest-netmag.jpg" }) {
-        childImageSharp {
-          gatsbyImageData(layout: FULL_WIDTH)
-        }
+      childImageSharp {
+        gatsbyImageData(layout: FULL_WIDTH)
+      }
     }
     allLinksJson {
-        edges {
-            node {
-                id
-                link
-                name
-            }
+      edges {
+        node {
+          id
+          link
+          name
         }
+      }
     }
   }
 `

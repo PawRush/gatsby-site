@@ -1,30 +1,41 @@
-import React, { Component } from "react"
-import { graphql } from "gatsby"
+import React, { Component } from 'react'
+import { graphql } from 'gatsby'
 import parse from 'html-react-parser'
 import BodyClassName from 'react-body-classname'
-import PropTypes from "prop-types"
-import { getSrc } from "gatsby-plugin-image"
+import PropTypes from 'prop-types'
+import { getSrc } from 'gatsby-plugin-image'
 
-import RouteTargetHeading from "../components/route-target-heading"
+import RouteTargetHeading from '../components/route-target-heading'
 import SEO from '../components/seo'
 import Layout from '../components/layout'
 
 class FeatureTemplate extends Component {
   render() {
     const page = this.props.data.markdownRemark
-    const coverImageSrc = page.frontmatter.coverImage ? getSrc(page.frontmatter.coverImage) : null
+    const coverImageSrc = page.frontmatter.coverImage
+      ? getSrc(page.frontmatter.coverImage)
+      : null
 
     return (
       <BodyClassName className="page">
         <Layout pathname={this.props.location.pathname}>
-          <SEO title={ page.frontmatter.title } keywords={['Marcy Sutton', 'MarcySutton.com', 'writing', 'pages', 'blog']}
-            image={coverImageSrc} />
+          <SEO
+            title={page.frontmatter.title}
+            keywords={[
+              'Marcy Sutton',
+              'MarcySutton.com',
+              'writing',
+              'pages',
+              'blog',
+            ]}
+            image={coverImageSrc}
+          />
           <section className="generic-wrap page-post-detail">
             <article>
-                <RouteTargetHeading targetID="global-nav">
-                  { parse(page.frontmatter.title) }
-                </RouteTargetHeading>
-                { parse(page.html) }
+              <RouteTargetHeading targetID="global-nav">
+                {parse(page.frontmatter.title)}
+              </RouteTargetHeading>
+              {parse(page.html)}
             </article>
           </section>
         </Layout>
@@ -32,7 +43,6 @@ class FeatureTemplate extends Component {
     )
   }
 }
-
 
 FeatureTemplate.propTypes = {
   data: PropTypes.object.isRequired,
@@ -42,7 +52,7 @@ FeatureTemplate.propTypes = {
 export default FeatureTemplate
 
 export const pageQuery = graphql`
-  query($id: String!) {
+  query ($id: String!) {
     markdownRemark(id: { eq: $id }) {
       id
       frontmatter {

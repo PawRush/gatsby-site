@@ -4,17 +4,28 @@ import Helmet from 'react-helmet'
 import { StaticQuery, graphql } from 'gatsby'
 import { getSrc } from 'gatsby-plugin-image'
 
-function SEO({ description, lang, meta, keywords, image, title, player, shortTitle }) {
+function SEO({
+  description,
+  lang,
+  meta,
+  keywords,
+  image,
+  title,
+  player,
+  shortTitle,
+}) {
   return (
     <StaticQuery
       query={detailsQuery}
-      render={data => {
+      render={(data) => {
         const defaultImageSrc = getSrc(data.defaultImage)
         const squareImageSrc = getSrc(data.squareImage)
         const seo = {
           description: description || data.site.siteMetadata.socialDescription,
-          image: `${data.site.siteMetadata.siteUrl }${image || defaultImageSrc}`,
-          fbImage: `${data.site.siteMetadata.siteUrl }${image || squareImageSrc}`
+          image: `${data.site.siteMetadata.siteUrl}${image || defaultImageSrc}`,
+          fbImage: `${data.site.siteMetadata.siteUrl}${
+            image || squareImageSrc
+          }`,
         }
         const defaultTitle = data.site.siteMetadata.title
         const pageTitle = title ? `${title} | ${defaultTitle}` : defaultTitle
@@ -23,7 +34,7 @@ function SEO({ description, lang, meta, keywords, image, title, player, shortTit
             htmlAttributes={{
               lang,
             }}
-            title={ pageTitle }
+            title={pageTitle}
             meta={[
               {
                 name: 'description',
@@ -59,7 +70,8 @@ function SEO({ description, lang, meta, keywords, image, title, player, shortTit
               },
               {
                 name: 'twitter:title',
-                content: shortTitle && shortTitle !== '' ? shortTitle : pageTitle,
+                content:
+                  shortTitle && shortTitle !== '' ? shortTitle : pageTitle,
               },
               {
                 name: 'twitter:image',
@@ -72,18 +84,20 @@ function SEO({ description, lang, meta, keywords, image, title, player, shortTit
             ]
               .concat(
                 player
-                  ? [{
-                      property: 'twitter:player',
-                      content: player,
-                    },
-                    {
-                      name: "twitter:player:width",
-                      content: "480"
-                    },
-                    {
-                      name: "twitter:player:height",
-                      content: "480"
-                    }]
+                  ? [
+                      {
+                        property: 'twitter:player',
+                        content: player,
+                      },
+                      {
+                        name: 'twitter:player:width',
+                        content: '480',
+                      },
+                      {
+                        name: 'twitter:player:height',
+                        content: '480',
+                      },
+                    ]
                   : []
               )
               .concat(
