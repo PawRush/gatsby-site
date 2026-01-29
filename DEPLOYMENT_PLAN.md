@@ -5,7 +5,7 @@ app_name: Marcy
 app_type: Frontend Application - Gatsby Static Site
 branch: deploy-to-aws-20260129_231512-sergeyka
 created: 2026-01-29T23:18:00Z
-last_updated: 2026-01-29T23:28:00Z
+last_updated: 2026-01-29T23:34:00Z
 ---
 
 # Deployment Plan: MarcySutton.com
@@ -29,8 +29,8 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 - [x] Step 9: Validate CDK Synth
 
 ## Phase 3: Deploy and Validate
-- [ ] Step 10: Execute CDK Deployment
-- [ ] Step 11: Validate CloudFormation Stack
+- [x] Step 10: Execute CDK Deployment
+- [x] Step 11: Validate CloudFormation Stack
 
 ## Phase 4: Update Documentation
 - [ ] Step 12: Finalize Deployment Plan
@@ -38,12 +38,12 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 
 ## Deployment Info
 
-- Deployment URL: [pending]
-- Stack name: [pending]
-- Distribution ID: [pending]
-- S3 Bucket Name: [pending]
-- CloudFront Log Bucket: [pending]
-- S3 Log Bucket: [pending]
+- Deployment URL: https://d3s0ljhye4s84z.cloudfront.net
+- Stack name: MarcyFrontend-preview-sergeyka
+- Distribution ID: EKJQE38AQOVQW
+- S3 Bucket Name: marcyfrontend-preview-serge-cftos3s3bucketcae9f2be-w6rqhpilgpfx
+- CloudFront Log Bucket: marcyfrontend-preview-ser-cftos3cloudfrontloggingb-zgngewad7psk
+- S3 Log Bucket: marcyfrontend-preview-ser-cftos3s3loggingbucket64b-6l62mygdonbn
 
 ## Recovery Guide
 
