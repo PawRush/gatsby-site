@@ -1,12 +1,21 @@
 #!/bin/bash
 
 ################################################################################
-# Gatsby Frontend Deployment Script
+# Deployment Script for Gatsby Site to AWS
 ################################################################################
-# This script automates the complete deployment process:
-# 1. Build the Gatsby site
-# 2. Bootstrap CDK (if needed)
-# 3. Deploy infrastructure to AWS
+#
+# This script automates the deployment of a Gatsby site to AWS using:
+# - Amazon S3 for static file hosting
+# - Amazon CloudFront for global CDN distribution
+# - AWS CDK for infrastructure as code
+#
+# The script performs the following steps:
+# 1. Environment validation and prerequisites check
+# 2. Gatsby site build
+# 3. CDK bootstrap (first-time setup)
+# 4. CDK deployment
+# 5. Output retrieval and display
+#
 ################################################################################
 
 set -e  # Exit on any error
@@ -16,30 +25,23 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Deployment configuration
-DEPLOYMENT_ID="${DEPLOYMENT_ID:-gatsby-site-1772715714}"
-STACK_NAME="${DEPLOYMENT_ID}-stack"
-AWS_REGION="${AWS_REGION:-us-east-1}"
-CDK_QUALIFIER="${CDK_QUALIFIER:-hnb659fds}"
-
-# Project paths
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-INFRA_DIR="${PROJECT_ROOT}/infra"
-BUILD_DIR="${PROJECT_ROOT}/public"
+DEPLOYMENT_ID="${DEPLOYMENT_ID:-gatsby-site-1772716889}"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+INFRA_DIR="${REPO_ROOT}/infra"
+BUILD_OUTPUT_DIR="${REPO_ROOT}/public"
 
 ################################################################################
 # Utility Functions
 ################################################################################
 
 print_header() {
-    echo ""
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${BLUE}  $1${NC}"
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo ""
+    echo -e "\n${CYAN}═══════════════════════════════════════════════════════════════${NC}"
+    echo -e "${CYAN}  $1${NC}"
+    echo -e "${CYAN}═══════════════════════════════════════════════════════════════${NC}\n"
 }
 
 print_success() {
@@ -50,131 +52,88 @@ print_error() {
     echo -e "${RED}✗ $1${NC}"
 }
 
+print_warning() {
+    echo -e "${YELLOW}⚠ $1${NC}"
+}
+
 print_info() {
-    echo -e "${YELLOW}ℹ $1${NC}"
+    echo -e "${BLUE}ℹ $1${NC}"
 }
 
 print_step() {
-    echo -e "${BLUE}→ $1${NC}"
-}
-
-check_command() {
-    if ! command -v "$1" &> /dev/null; then
-        print_error "$1 is not installed. Please install it first."
-        return 1
-    fi
-    return 0
+    echo -e "${CYAN}➜ $1${NC}"
 }
 
 ################################################################################
-# Pre-flight Checks
+# Prerequisite Checks
 ################################################################################
 
-preflight_checks() {
-    print_header "Pre-flight Checks"
+check_prerequisites() {
+    print_header "Checking Prerequisites"
     
-    local all_checks_passed=true
+    local all_ok=true
     
     # Check Node.js
-    print_step "Checking Node.js installation..."
-    if check_command node; then
+    print_step "Checking Node.js..."
+    if command -v node &> /dev/null; then
         NODE_VERSION=$(node --version)
-        print_success "Node.js ${NODE_VERSION} is installed"
+        print_success "Node.js installed: $NODE_VERSION"
     else
-        all_checks_passed=false
+        print_error "Node.js is not installed"
+        all_ok=false
     fi
     
     # Check npm
-    print_step "Checking npm installation..."
-    if check_command npm; then
+    print_step "Checking npm..."
+    if command -v npm &> /dev/null; then
         NPM_VERSION=$(npm --version)
-        print_success "npm ${NPM_VERSION} is installed"
+        print_success "npm installed: $NPM_VERSION"
     else
-        all_checks_passed=false
+        print_error "npm is not installed"
+        all_ok=false
     fi
     
     # Check AWS CLI
-    print_step "Checking AWS CLI installation..."
-    if check_command aws; then
+    print_step "Checking AWS CLI..."
+    if command -v aws &> /dev/null; then
         AWS_VERSION=$(aws --version 2>&1 | cut -d' ' -f1)
-        print_success "${AWS_VERSION} is installed"
+        print_success "AWS CLI installed: $AWS_VERSION"
     else
-        all_checks_passed=false
+        print_error "AWS CLI is not installed"
+        print_info "Install from: https://aws.amazon.com/cli/"
+        all_ok=false
     fi
     
     # Check AWS credentials
     print_step "Checking AWS credentials..."
     if aws sts get-caller-identity &> /dev/null; then
-        AWS_ACCOUNT=$(aws sts get-caller-identity --query Account --output text 2>/dev/null)
-        AWS_USER=$(aws sts get-caller-identity --query Arn --output text 2>/dev/null | cut -d'/' -f2)
-        print_success "AWS credentials configured (Account: ${AWS_ACCOUNT}, User: ${AWS_USER})"
+        AWS_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+        AWS_REGION=$(aws configure get region || echo "us-east-1")
+        print_success "AWS credentials configured"
+        print_info "Account ID: $AWS_ACCOUNT"
+        print_info "Region: $AWS_REGION"
     else
-        print_error "AWS credentials not configured. Run 'aws configure' first."
-        all_checks_passed=false
+        print_error "AWS credentials are not configured"
+        print_info "Run: aws configure"
+        all_ok=false
     fi
     
     # Check CDK
-    print_step "Checking AWS CDK installation..."
-    if check_command cdk; then
-        CDK_VERSION=$(cdk --version 2>&1)
-        print_success "AWS CDK ${CDK_VERSION} is installed"
+    print_step "Checking AWS CDK..."
+    if command -v cdk &> /dev/null; then
+        CDK_VERSION=$(cdk --version)
+        print_success "AWS CDK installed: $CDK_VERSION"
     else
-        print_error "AWS CDK not installed. Run 'npm install -g aws-cdk' first."
-        all_checks_passed=false
+        print_warning "AWS CDK CLI not found globally"
+        print_info "Will use npx cdk from infra directory"
     fi
     
-    # Check project structure
-    print_step "Checking project structure..."
-    if [ -f "${PROJECT_ROOT}/package.json" ]; then
-        print_success "Root package.json found"
-    else
-        print_error "Root package.json not found"
-        all_checks_passed=false
-    fi
-    
-    if [ -d "${INFRA_DIR}" ]; then
-        print_success "Infrastructure directory found"
-    else
-        print_error "Infrastructure directory not found"
-        all_checks_passed=false
-    fi
-    
-    if [ "$all_checks_passed" = false ]; then
-        print_error "Pre-flight checks failed. Please fix the issues above."
+    if [ "$all_ok" = false ]; then
+        print_error "Prerequisites check failed. Please install missing dependencies."
         exit 1
     fi
     
-    print_success "All pre-flight checks passed!"
-}
-
-################################################################################
-# Install Dependencies
-################################################################################
-
-install_dependencies() {
-    print_header "Installing Dependencies"
-    
-    # Install root dependencies
-    print_step "Installing Gatsby site dependencies..."
-    cd "${PROJECT_ROOT}"
-    if [ -f "package-lock.json" ]; then
-        npm ci
-    else
-        npm install
-    fi
-    print_success "Gatsby dependencies installed"
-    
-    # Install CDK dependencies
-    print_step "Installing CDK infrastructure dependencies..."
-    cd "${INFRA_DIR}"
-    if [ -f "package-lock.json" ]; then
-        npm ci
-    else
-        npm install
-    fi
-    print_success "CDK dependencies installed"
-    
-    cd "${PROJECT_ROOT}"
+    print_success "All prerequisites satisfied"
 }
 
 ################################################################################
@@ -184,53 +143,58 @@ install_dependencies() {
 build_gatsby_site() {
     print_header "Building Gatsby Site"
     
-    cd "${PROJECT_ROOT}"
+    print_step "Installing dependencies..."
+    cd "$REPO_ROOT"
     
-    print_step "Cleaning previous build..."
-    if [ -d "${BUILD_DIR}" ]; then
-        rm -rf "${BUILD_DIR}"
-        print_success "Previous build cleaned"
+    if [ ! -d "node_modules" ]; then
+        print_info "node_modules not found, running npm install..."
+        npm install
+        print_success "Dependencies installed"
+    else
+        print_info "node_modules found, skipping install"
+        print_warning "Run 'npm install' manually if you need to update dependencies"
     fi
     
-    print_step "Running Gatsby build..."
+    print_step "Building Gatsby site..."
+    print_info "Build output will be in: $BUILD_OUTPUT_DIR"
+    
+    # Clean previous build
+    if [ -d "$BUILD_OUTPUT_DIR" ]; then
+        print_info "Removing previous build..."
+        rm -rf "$BUILD_OUTPUT_DIR"
+    fi
+    
+    # Run Gatsby build
     npm run build
     
-    if [ ! -d "${BUILD_DIR}" ]; then
-        print_error "Build failed: output directory not found"
-        exit 1
-    fi
-    
-    # Verify build output
-    FILE_COUNT=$(find "${BUILD_DIR}" -type f | wc -l)
-    BUILD_SIZE=$(du -sh "${BUILD_DIR}" | cut -f1)
-    
-    print_success "Gatsby build completed successfully"
-    print_info "Output directory: ${BUILD_DIR}"
-    print_info "Files generated: ${FILE_COUNT}"
-    print_info "Total size: ${BUILD_SIZE}"
-    
-    # Check for index.html
-    if [ -f "${BUILD_DIR}/index.html" ]; then
-        print_success "index.html found"
+    if [ -d "$BUILD_OUTPUT_DIR" ]; then
+        BUILD_SIZE=$(du -sh "$BUILD_OUTPUT_DIR" | cut -f1)
+        FILE_COUNT=$(find "$BUILD_OUTPUT_DIR" -type f | wc -l | tr -d ' ')
+        print_success "Build completed successfully"
+        print_info "Build size: $BUILD_SIZE"
+        print_info "Files: $FILE_COUNT"
     else
-        print_error "index.html not found in build output"
+        print_error "Build failed - output directory not found"
         exit 1
     fi
 }
 
 ################################################################################
-# Compile CDK Infrastructure
+# Install CDK Dependencies
 ################################################################################
 
-compile_cdk() {
-    print_header "Compiling CDK Infrastructure"
+install_cdk_dependencies() {
+    print_header "Installing CDK Dependencies"
     
-    cd "${INFRA_DIR}"
+    cd "$INFRA_DIR"
     
-    print_step "Compiling TypeScript..."
-    npm run build
-    
-    print_success "CDK infrastructure compiled successfully"
+    if [ ! -d "node_modules" ]; then
+        print_info "Installing CDK dependencies..."
+        npm install
+        print_success "CDK dependencies installed"
+    else
+        print_info "CDK dependencies already installed"
+    fi
 }
 
 ################################################################################
@@ -238,30 +202,31 @@ compile_cdk() {
 ################################################################################
 
 bootstrap_cdk() {
-    print_header "CDK Bootstrap Check"
+    print_header "Bootstrapping AWS CDK"
     
-    cd "${INFRA_DIR}"
+    cd "$INFRA_DIR"
     
     print_step "Checking if CDK is already bootstrapped..."
     
-    # Check if bootstrap stack exists
-    if aws cloudformation describe-stacks \
-        --stack-name "CDKToolkit" \
-        --region "${AWS_REGION}" &> /dev/null; then
-        print_success "CDK already bootstrapped in ${AWS_REGION}"
-        return 0
-    fi
-    
-    print_info "CDK not bootstrapped. Starting bootstrap process..."
-    print_step "Bootstrapping CDK in ${AWS_REGION}..."
-    
     AWS_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+    AWS_REGION=$(aws configure get region || echo "us-east-1")
     
-    cdk bootstrap "aws://${AWS_ACCOUNT}/${AWS_REGION}" \
-        --region "${AWS_REGION}" \
-        --qualifier "${CDK_QUALIFIER}"
-    
-    print_success "CDK bootstrapped successfully"
+    # Check if bootstrap stack exists
+    if aws cloudformation describe-stacks --stack-name CDKToolkit --region "$AWS_REGION" &> /dev/null; then
+        print_success "CDK is already bootstrapped in $AWS_REGION"
+        print_info "Bootstrap stack: CDKToolkit"
+        print_warning "Skipping bootstrap (already exists)"
+    else
+        print_warning "CDK not bootstrapped in $AWS_REGION"
+        print_step "Bootstrapping CDK..."
+        print_info "This is a one-time setup per AWS account/region"
+        
+        DEPLOYMENT_ID="$DEPLOYMENT_ID" npx cdk bootstrap \
+            aws://$AWS_ACCOUNT/$AWS_REGION \
+            --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess
+        
+        print_success "CDK bootstrapped successfully"
+    fi
 }
 
 ################################################################################
@@ -271,197 +236,291 @@ bootstrap_cdk() {
 synthesize_stack() {
     print_header "Synthesizing CDK Stack"
     
-    cd "${INFRA_DIR}"
+    cd "$INFRA_DIR"
     
-    print_step "Running CDK synth..."
-    DEPLOYMENT_ID="${DEPLOYMENT_ID}" cdk synth
+    print_step "Generating CloudFormation template..."
+    print_info "Deployment ID: $DEPLOYMENT_ID"
+    print_info "Stack name: ${DEPLOYMENT_ID}-stack"
     
-    print_success "Stack synthesized successfully"
+    DEPLOYMENT_ID="$DEPLOYMENT_ID" npx cdk synth
     
-    # Show stack info
-    if [ -d "cdk.out" ]; then
-        print_info "CDK output directory: ${INFRA_DIR}/cdk.out"
-    fi
+    print_success "CloudFormation template generated"
+    print_info "Template location: ${INFRA_DIR}/cdk.out/${DEPLOYMENT_ID}-stack.template.json"
 }
 
 ################################################################################
-# Deploy Stack
+# Deploy CDK Stack
 ################################################################################
 
 deploy_stack() {
-    print_header "Deploying Stack to AWS"
+    print_header "Deploying CDK Stack to AWS"
     
-    cd "${INFRA_DIR}"
+    cd "$INFRA_DIR"
     
-    print_info "Stack name: ${STACK_NAME}"
-    print_info "Region: ${AWS_REGION}"
-    print_info "Deployment ID: ${DEPLOYMENT_ID}"
+    print_step "Deploying infrastructure..."
+    print_info "Stack name: ${DEPLOYMENT_ID}-stack"
+    print_info "This may take several minutes (CloudFront distribution creation is slow)"
+    echo ""
     
-    print_step "Deploying CDK stack..."
+    # Deploy with auto-approval
+    DEPLOYMENT_ID="$DEPLOYMENT_ID" npx cdk deploy \
+        --require-approval never \
+        --outputs-file "${REPO_ROOT}/cdk-outputs.json"
     
-    # Deploy with automatic approval in CI/CD, or require confirmation locally
-    if [ -n "${CI}" ] || [ -n "${SKIP_CONFIRMATION}" ]; then
-        DEPLOYMENT_ID="${DEPLOYMENT_ID}" cdk deploy \
-            --require-approval never \
-            --region "${AWS_REGION}"
-    else
-        DEPLOYMENT_ID="${DEPLOYMENT_ID}" cdk deploy \
-            --region "${AWS_REGION}"
-    fi
-    
-    print_success "Stack deployed successfully!"
+    print_success "Deployment completed successfully"
 }
 
 ################################################################################
-# Get Stack Outputs
+# Display Outputs
 ################################################################################
 
-get_stack_outputs() {
-    print_header "Deployment Complete"
+display_outputs() {
+    print_header "Deployment Outputs"
     
-    print_step "Fetching stack outputs..."
+    cd "$REPO_ROOT"
     
-    # Get CloudFront URL
-    CLOUDFRONT_URL=$(aws cloudformation describe-stacks \
-        --stack-name "${STACK_NAME}" \
-        --region "${AWS_REGION}" \
-        --query "Stacks[0].Outputs[?OutputKey=='CloudFrontURL'].OutputValue" \
-        --output text 2>/dev/null || echo "")
-    
-    # Get S3 Bucket
-    S3_BUCKET=$(aws cloudformation describe-stacks \
-        --stack-name "${STACK_NAME}" \
-        --region "${AWS_REGION}" \
-        --query "Stacks[0].Outputs[?OutputKey=='BucketName'].OutputValue" \
-        --output text 2>/dev/null || echo "")
-    
-    # Get CloudFront Distribution ID
-    DISTRIBUTION_ID=$(aws cloudformation describe-stacks \
-        --stack-name "${STACK_NAME}" \
-        --region "${AWS_REGION}" \
-        --query "Stacks[0].Outputs[?OutputKey=='DistributionId'].OutputValue" \
-        --output text 2>/dev/null || echo "")
-    
-    echo ""
-    print_success "🎉 Deployment successful!"
-    echo ""
-    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${GREEN}  Deployment Information${NC}"
-    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo ""
-    echo -e "  ${BLUE}Stack Name:${NC}       ${STACK_NAME}"
-    echo -e "  ${BLUE}Region:${NC}           ${AWS_REGION}"
-    echo -e "  ${BLUE}Deployment ID:${NC}    ${DEPLOYMENT_ID}"
-    echo ""
-    
-    if [ -n "${CLOUDFRONT_URL}" ]; then
-        echo -e "  ${BLUE}Website URL:${NC}      ${GREEN}${CLOUDFRONT_URL}${NC}"
-    fi
-    
-    if [ -n "${S3_BUCKET}" ]; then
-        echo -e "  ${BLUE}S3 Bucket:${NC}        ${S3_BUCKET}"
-    fi
-    
-    if [ -n "${DISTRIBUTION_ID}" ]; then
-        echo -e "  ${BLUE}Distribution ID:${NC}  ${DISTRIBUTION_ID}"
-    fi
-    
-    echo ""
-    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo ""
-    
-    if [ -n "${CLOUDFRONT_URL}" ]; then
-        print_info "Your site is being deployed and will be available shortly at:"
-        echo -e "  ${GREEN}${CLOUDFRONT_URL}${NC}"
+    if [ -f "cdk-outputs.json" ]; then
+        print_step "Extracting deployment information..."
+        
+        # Parse outputs using grep and sed (works without jq)
+        STACK_NAME="${DEPLOYMENT_ID}-stack"
+        
+        # Try to extract distribution URL
+        DISTRIBUTION_URL=$(grep -A 1 "DistributionUrl" cdk-outputs.json | grep -v "DistributionUrl" | sed 's/[",]//g' | tr -d ' ' || echo "")
+        
+        # Try to extract distribution ID
+        DISTRIBUTION_ID=$(grep -A 1 "DistributionId" cdk-outputs.json | grep -v "DistributionId" | sed 's/[",]//g' | tr -d ' ' || echo "")
+        
+        # Try to extract bucket name
+        BUCKET_NAME=$(grep -A 1 "BucketName" cdk-outputs.json | grep -v "BucketName" | sed 's/[",]//g' | tr -d ' ' || echo "")
+        
         echo ""
-        print_info "Note: CloudFront distribution may take 5-15 minutes to fully propagate."
+        print_success "Your Gatsby site has been deployed!"
+        echo ""
+        
+        if [ -n "$DISTRIBUTION_URL" ]; then
+            echo -e "${GREEN}🌐 Website URL:${NC}"
+            echo -e "   ${CYAN}$DISTRIBUTION_URL${NC}"
+            echo ""
+        fi
+        
+        if [ -n "$DISTRIBUTION_ID" ]; then
+            echo -e "${BLUE}📊 CloudFront Distribution ID:${NC}"
+            echo -e "   $DISTRIBUTION_ID"
+            echo ""
+        fi
+        
+        if [ -n "$BUCKET_NAME" ]; then
+            echo -e "${BLUE}🪣 S3 Bucket Name:${NC}"
+            echo -e "   $BUCKET_NAME"
+            echo ""
+        fi
+        
+        echo -e "${BLUE}📋 Stack Name:${NC}"
+        echo -e "   ${DEPLOYMENT_ID}-stack"
+        echo ""
+        
+        print_info "Full outputs saved to: cdk-outputs.json"
+        
+    else
+        print_warning "Output file not found, fetching from CloudFormation..."
+        
+        AWS_REGION=$(aws configure get region || echo "us-east-1")
+        
+        echo ""
+        print_info "Stack Name: ${DEPLOYMENT_ID}-stack"
+        print_info "Region: $AWS_REGION"
+        echo ""
+        
+        # Get stack outputs from CloudFormation
+        print_step "Fetching stack outputs..."
+        aws cloudformation describe-stacks \
+            --stack-name "${DEPLOYMENT_ID}-stack" \
+            --region "$AWS_REGION" \
+            --query 'Stacks[0].Outputs' \
+            --output table 2>/dev/null || print_warning "Could not fetch outputs"
     fi
 }
 
 ################################################################################
-# Cleanup
+# Cleanup on Error
 ################################################################################
 
-cleanup() {
-    print_header "Cleanup"
-    print_step "Returning to project root..."
-    cd "${PROJECT_ROOT}"
-    print_success "Cleanup complete"
+cleanup_on_error() {
+    print_error "Deployment failed!"
+    print_info "Check the error messages above for details"
+    exit 1
+}
+
+trap cleanup_on_error ERR
+
+################################################################################
+# Display Usage
+################################################################################
+
+usage() {
+    cat << EOF
+Usage: $0 [OPTIONS]
+
+Deploy a Gatsby site to AWS using CDK infrastructure.
+
+OPTIONS:
+    --skip-build        Skip the Gatsby build step
+    --skip-bootstrap    Skip CDK bootstrap step
+    --synth-only        Only synthesize the CDK stack (no deployment)
+    --help              Show this help message
+
+ENVIRONMENT VARIABLES:
+    DEPLOYMENT_ID       Unique deployment identifier (default: gatsby-site-1772716889)
+    AWS_PROFILE         AWS profile to use (optional)
+    AWS_REGION          AWS region to deploy to (default: us-east-1)
+
+EXAMPLES:
+    # Full deployment (recommended)
+    ./scripts/deploy.sh
+
+    # Skip build if already built
+    ./scripts/deploy.sh --skip-build
+
+    # Only synthesize (dry-run)
+    ./scripts/deploy.sh --synth-only
+
+    # Use specific AWS profile
+    AWS_PROFILE=production ./scripts/deploy.sh
+
+    # Deploy to specific region
+    AWS_REGION=eu-west-1 ./scripts/deploy.sh
+
+DEPLOYMENT WORKFLOW:
+    1. Check prerequisites (Node.js, npm, AWS CLI, credentials)
+    2. Build Gatsby site (npm run build)
+    3. Install CDK dependencies
+    4. Bootstrap CDK (first-time setup)
+    5. Synthesize CloudFormation template
+    6. Deploy to AWS (S3 + CloudFront)
+    7. Display deployment outputs
+
+RESOURCES CREATED:
+    - S3 Bucket: ${DEPLOYMENT_ID}-bucket
+    - CloudFront Distribution (HTTPS, global CDN)
+    - CloudFront Function (URL rewriting for SPA routing)
+    - Origin Access Identity (secure S3 access)
+
+For more information, see:
+    - infra/README.md
+    - infra/STACK_README.md
+    - CDK_STACK_SUMMARY.md
+
+EOF
 }
 
 ################################################################################
-# Main Execution
+# Parse Arguments
+################################################################################
+
+SKIP_BUILD=false
+SKIP_BOOTSTRAP=false
+SYNTH_ONLY=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --skip-build)
+            SKIP_BUILD=true
+            shift
+            ;;
+        --skip-bootstrap)
+            SKIP_BOOTSTRAP=true
+            shift
+            ;;
+        --synth-only)
+            SYNTH_ONLY=true
+            shift
+            ;;
+        --help|-h)
+            usage
+            exit 0
+            ;;
+        *)
+            print_error "Unknown option: $1"
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+################################################################################
+# Main Deployment Flow
 ################################################################################
 
 main() {
-    echo ""
-    echo -e "${BLUE}╔═══════════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}║                                                                   ║${NC}"
-    echo -e "${BLUE}║           Gatsby Frontend Deployment to AWS                      ║${NC}"
-    echo -e "${BLUE}║           S3 + CloudFront via AWS CDK                            ║${NC}"
-    echo -e "${BLUE}║                                                                   ║${NC}"
-    echo -e "${BLUE}╚═══════════════════════════════════════════════════════════════════╝${NC}"
-    echo ""
+    print_header "Gatsby Site Deployment to AWS"
     
-    print_info "Deployment ID: ${DEPLOYMENT_ID}"
-    print_info "Stack Name: ${STACK_NAME}"
-    print_info "Region: ${AWS_REGION}"
+    echo -e "${BLUE}Repository:${NC} $REPO_ROOT"
+    echo -e "${BLUE}Deployment ID:${NC} $DEPLOYMENT_ID"
+    echo -e "${BLUE}Stack Name:${NC} ${DEPLOYMENT_ID}-stack"
+    echo -e "${BLUE}Build Output:${NC} $BUILD_OUTPUT_DIR"
     echo ""
     
-    # Trap errors and cleanup
-    trap cleanup EXIT
+    # Step 1: Check prerequisites
+    check_prerequisites
     
-    # Execute deployment steps
-    preflight_checks
-    install_dependencies
-    build_gatsby_site
-    compile_cdk
-    bootstrap_cdk
+    # Step 2: Build Gatsby site
+    if [ "$SKIP_BUILD" = false ]; then
+        build_gatsby_site
+    else
+        print_warning "Skipping Gatsby build (--skip-build)"
+        if [ ! -d "$BUILD_OUTPUT_DIR" ]; then
+            print_error "Build output directory not found: $BUILD_OUTPUT_DIR"
+            print_info "Run without --skip-build flag"
+            exit 1
+        fi
+    fi
+    
+    # Step 3: Install CDK dependencies
+    install_cdk_dependencies
+    
+    # Step 4: Bootstrap CDK
+    if [ "$SKIP_BOOTSTRAP" = false ]; then
+        bootstrap_cdk
+    else
+        print_warning "Skipping CDK bootstrap (--skip-bootstrap)"
+    fi
+    
+    # Step 5: Synthesize stack
     synthesize_stack
-    deploy_stack
-    get_stack_outputs
     
-    print_success "All deployment steps completed successfully!"
+    # Step 6: Deploy (or stop if synth-only)
+    if [ "$SYNTH_ONLY" = true ]; then
+        print_warning "Synth-only mode (--synth-only)"
+        print_info "CloudFormation template generated but not deployed"
+        print_info "To deploy, run: cd infra && DEPLOYMENT_ID=$DEPLOYMENT_ID npx cdk deploy"
+        exit 0
+    fi
+    
+    deploy_stack
+    
+    # Step 7: Display outputs
+    display_outputs
+    
+    # Final success message
+    print_header "Deployment Complete! 🚀"
+    
+    echo -e "${GREEN}Your Gatsby site is now live on AWS!${NC}"
+    echo ""
+    print_info "Next steps:"
+    echo "  • Visit your website at the CloudFront URL above"
+    echo "  • Set up a custom domain (optional)"
+    echo "  • Configure AWS WAF for security (optional)"
+    echo "  • Monitor with CloudWatch (logs available in AWS Console)"
+    echo ""
+    print_info "To update your site:"
+    echo "  1. Make changes to your Gatsby site"
+    echo "  2. Run: ./scripts/deploy.sh"
+    echo "  3. CDK will automatically update S3 and invalidate CloudFront cache"
+    echo ""
+    print_success "Deployment completed successfully!"
 }
 
-################################################################################
-# Script Entry Point
-################################################################################
+# Run main function
+main
 
-# Handle script arguments
-case "${1:-}" in
-    --help|-h)
-        echo "Usage: $0 [OPTIONS]"
-        echo ""
-        echo "Options:"
-        echo "  --help, -h              Show this help message"
-        echo "  --skip-confirmation     Skip deployment confirmation prompts"
-        echo ""
-        echo "Environment Variables:"
-        echo "  DEPLOYMENT_ID           Deployment identifier (default: gatsby-site-1772715714)"
-        echo "  AWS_REGION              AWS region for deployment (default: us-east-1)"
-        echo "  CDK_QUALIFIER           CDK bootstrap qualifier (default: hnb659fds)"
-        echo "  SKIP_CONFIRMATION       Skip confirmation prompts (any value)"
-        echo "  CI                      Set in CI/CD environments (auto-skips confirmations)"
-        echo ""
-        echo "Examples:"
-        echo "  $0                                    # Standard deployment"
-        echo "  $0 --skip-confirmation                # Deploy without prompts"
-        echo "  DEPLOYMENT_ID=my-app-123 $0           # Custom deployment ID"
-        echo "  AWS_REGION=eu-west-1 $0               # Deploy to specific region"
-        echo ""
-        exit 0
-        ;;
-    --skip-confirmation)
-        SKIP_CONFIRMATION=true
-        main
-        ;;
-    "")
-        main
-        ;;
-    *)
-        print_error "Unknown option: $1"
-        echo "Run '$0 --help' for usage information"
-        exit 1
-        ;;
-esac
