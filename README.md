@@ -34,3 +34,42 @@
 1. **Give Feedback.**
 
     I'm actively working to improve this website's accessibility and functionality. If you find something that could be improved, please [file an issue](./issues/new)!
+## 🚀 Deployment
+
+The site is deployed to AWS (S3 + CloudFront) using AWS CDK.
+
+### Live URL
+
+**https://d10vf2tw1paq7l.cloudfront.net**
+
+### AWS Resources
+
+| Resource | Value |
+|---|---|
+| **S3 Bucket** | `gatsby-site-1772804382` |
+| **CloudFront Distribution ID** | `E3348J8OUMRF4A` |
+| **CloudFormation Stack** | `gatsby-site-1772804382` |
+
+### Deploy
+
+```sh
+# 1. Build the site
+gatsby build
+
+# 2. Sync hashed assets (JS, CSS, images) — long-lived cache
+aws s3 sync public/ s3://gatsby-site-1772804382/ --delete \
+  --exclude "index.html" --exclude "*.json" \
+  --cache-control "public, max-age=31536000, immutable"
+
+# 3. Sync HTML + JSON manifests — no cache
+aws s3 sync public/ s3://gatsby-site-1772804382/ \
+  --exclude "*" --include "index.html" --include "*.json" \
+  --cache-control "no-cache, no-store, must-revalidate"
+
+# 4. Invalidate CloudFront cache
+aws cloudfront create-invalidation \
+  --distribution-id E3348J8OUMRF4A \
+  --paths "/*"
+```
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for full details including infrastructure teardown and CDK redeploy commands.
