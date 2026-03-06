@@ -1,0 +1,9 @@
+{
+  "gatsby-site-1772795009": {
+    "DeployCommand": "aws s3 sync public/ s3://gatsby-site-1772795009 --delete",
+    "BucketName": "gatsby-site-1772795009",
+    "DistributionId": "E9ZKTFQYOD596",
+    "DistributionDomainName": "https://d2xr07mwscjanf.cloudfront.net",
+    "InvalidateCommand": "aws cloudfront create-invalidation --distribution-id E9ZKTFQYOD596 --paths \"/*\""
+  }
+}
