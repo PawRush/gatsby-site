@@ -34,3 +34,54 @@
 1. **Give Feedback.**
 
     I'm actively working to improve this website's accessibility and functionality. If you find something that could be improved, please [file an issue](./issues/new)!
+## 🚀 Deployment
+
+The site is deployed to **AWS S3 + CloudFront** using AWS CDK.
+
+### Live URL
+
+> **https://d1qxkv3zwgmkge.cloudfront.net**
+
+### AWS Resources
+
+| Resource | Value |
+|---|---|
+| **CloudFront Distribution** | `E176NW0OB17LVR` |
+| **S3 Bucket** | `gatsby-site-1772785016` |
+| **CloudFormation Stack** | `FrontendStack-gatsby-site-1772785016` |
+| **Region** | `us-east-1` |
+
+### Deploy Command
+
+Build the site and sync to S3, then invalidate the CloudFront cache:
+
+```sh
+# 1. Install dependencies and build
+npm ci && npm run build
+
+# 2. Sync to S3
+aws s3 sync public/ s3://gatsby-site-1772785016/ \
+  --cache-control "public,max-age=31536000,immutable" --delete
+
+# 3. Invalidate CloudFront cache
+aws cloudfront create-invalidation \
+  --distribution-id E176NW0OB17LVR \
+  --paths "/*"
+```
+
+Or use the all-in-one script:
+
+```sh
+bash scripts/deploy.sh
+```
+
+### Update Infrastructure
+
+```sh
+cd infra
+cdk deploy --require-approval never \
+  -c deploymentId=gatsby-site-1772785016 \
+  --outputs-file cdk-outputs.json
+```
+
+For full deployment details, see [DEPLOYMENT.md](./DEPLOYMENT.md).
