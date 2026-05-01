@@ -5,7 +5,7 @@ app_name: MarcySutton
 app_type: Frontend Application (Gatsby Static Site)
 branch: deploy-to-aws-20260501_121659-kamielw
 created: 2026-05-01T12:55:00Z
-last_updated: 2026-05-01T13:02:00Z
+last_updated: 2026-05-01T13:05:00Z
 ---
 
 # Deployment Plan: MarcySutton.com
@@ -29,8 +29,8 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 - [x] Step 9: Validate CDK Synth
 
 ## Phase 3: Deploy and Validate
-- [ ] Step 10: Execute CDK Deployment
-- [ ] Step 11: Validate CloudFormation Stack
+- [x] Step 10: Execute CDK Deployment
+- [x] Step 11: Validate CloudFormation Stack
 
 ## Phase 4: Update Documentation
 - [ ] Step 12: Finalize Deployment Plan
@@ -47,12 +47,17 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 - Base Path: / (root deployment)
 - Trailing Slash: Default (always) - creates /path/index.html
 - Lint Command: None detected
-- Deployment URL: [after completion]
-- Stack Name: [after creation]
-- CloudFront Distribution ID: [after creation]
-- S3 Bucket Name: [after creation]
-- CloudFront Log Bucket: [after creation]
-- S3 Log Bucket: [after creation]
+- Deployment URL: https://d2pj0vcu8ixtoj.cloudfront.net
+- Stack Name: MarcySuttonFrontend-preview-kamielw
+- AWS Region: eu-central-1
+- CloudFront Distribution ID: E3EL8K3SVQP65Q
+- CloudFront Domain: d2pj0vcu8ixtoj.cloudfront.net
+- S3 Bucket Name: marcysuttonfrontend-preview-cftos3s3bucketcae9f2be-7agpn7iuda6y
+- CloudFront Log Bucket: marcysuttonfrontend-previ-cftos3cloudfrontloggingb-zsengz9tmzcf
+- S3 Log Bucket: marcysuttonfrontend-previ-cftos3s3loggingbucket64b-mfsipwiajnqi
+- Deployment Timestamp: 2026-05-01T11:03:00Z
+- Stack Status: CREATE_COMPLETE
+- CloudFront Status: Deployed
 
 ## Recovery Guide
 
