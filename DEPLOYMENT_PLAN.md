@@ -5,7 +5,7 @@ app_name: MarcySutton
 app_type: Frontend Application (Gatsby Static Site)
 branch: deploy-to-aws-20260501_121659-kamielw
 created: 2026-05-01T12:55:00Z
-last_updated: 2026-05-01T12:55:00Z
+last_updated: 2026-05-01T13:00:00Z
 ---
 
 # Deployment Plan: MarcySutton.com
@@ -17,10 +17,10 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 ## Phase 1: Gather Context and Configure
 - [x] Step 0: Inform User of Execution Flow
 - [x] Step 1: Create Deployment Plan
-- [ ] Step 2: Create Deploy Branch
-- [ ] Step 3: Detect Build Configuration
-- [ ] Step 4: Validate Prerequisites
-- [ ] Step 5: Revisit Deployment Plan
+- [x] Step 2: Create Deploy Branch
+- [x] Step 3: Detect Build Configuration
+- [x] Step 4: Validate Prerequisites
+- [x] Step 5: Revisit Deployment Plan
 
 ## Phase 2: Build CDK Infrastructure
 - [ ] Step 6: Initialize CDK Foundation
@@ -39,9 +39,14 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 ## Deployment Info
 
 - Framework: Gatsby 4.x
-- Package Manager: npm
+- Package Manager: npm (package-lock.json detected)
 - Build Command: npm run build
 - Output Directory: public/
+- URL Structure: /path/ (directories with index.html)
+- CloudFront Config: URL rewrite function (/path → /path/index.html)
+- Base Path: / (root deployment)
+- Trailing Slash: Default (always) - creates /path/index.html
+- Lint Command: None detected
 - Deployment URL: [after completion]
 - Stack Name: [after creation]
 - CloudFront Distribution ID: [after creation]
@@ -73,5 +78,5 @@ None.
 
 ### Session 1 - 2026-05-01T12:55:00Z
 Agent: Claude Sonnet 4.5
-Progress: Created deployment plan, switched to deployment branch
-Next: Complete Phase 1 - detect build configuration and validate prerequisites
+Progress: ✅ Phase 1 Complete - Created deployment plan, switched to branch, detected Gatsby build configuration (/path/index.html structure), validated all prerequisites (AWS CLI, npm, CDK v2, git clean, build succeeds)
+Next: Phase 2 - Initialize CDK foundation and generate infrastructure stack
