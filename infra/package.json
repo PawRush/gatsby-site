@@ -8,7 +8,9 @@
     "cdk": "cdk",
     "deploy": "npm run deploy:preview",
     "deploy:preview": "cdk deploy --all --require-approval never --progress events",
+    "deploy:pipeline": "cdk deploy MarcySuttonComPipelineStack --context codeConnectionArn=arn:aws:codeconnections:eu-central-1:189681391221:connection/ee7a600a-99ab-4b3a-bf6c-b42cc9f5a026 --context repositoryName=PawRush/gatsby-site --context branchName=deploy-to-aws-20260501_121659-kamielw --require-approval never --progress events",
     "destroy": "cdk destroy --all",
+    "destroy:pipeline": "cdk destroy MarcySuttonComPipelineStack --context codeConnectionArn=arn:aws:codeconnections:eu-central-1:189681391221:connection/ee7a600a-99ab-4b3a-bf6c-b42cc9f5a026",
     "synth": "cdk synth",
     "diff": "cdk diff"
   },
