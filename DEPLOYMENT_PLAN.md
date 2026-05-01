@@ -1,14 +1,14 @@
 ---
-sop_name: deploy-frontend-app
-repo_name: MarcySutton_com-gatsby-site
-app_name: MarcySutton
-app_type: Frontend Application (Gatsby Static Site)
+sop_name: setup-pipeline
+repo_name: PawRush/gatsby-site
+app_name: MarcySuttonCom
+app_type: CI/CD Pipeline
 branch: deploy-to-aws-20260501_121659-kamielw
-created: 2026-05-01T12:55:00Z
-last_updated: 2026-05-01T13:05:00Z
+created: 2026-05-01T12:30:00Z
+last_updated: 2026-05-01T12:35:00Z
 ---
 
-# Deployment Plan: MarcySutton.com
+# Deployment Plan: MarcySuttonCom Pipeline
 
 Coding Agents should follow this Deployment Plan, and validate previous progress if picking up the Deployment in a new coding session.
 
@@ -17,62 +17,50 @@ Coding Agents should follow this Deployment Plan, and validate previous progress
 ## Phase 1: Gather Context and Configure
 - [x] Step 0: Inform User of Execution Flow
 - [x] Step 1: Create Deployment Plan
-- [x] Step 2: Create Deploy Branch
-- [x] Step 3: Detect Build Configuration
-- [x] Step 4: Validate Prerequisites
-- [x] Step 5: Revisit Deployment Plan
+- [x] Step 2: Detect Existing Infrastructure
+  - [x] 2.1: Detect stacks, frontend, and backend
+  - [x] 2.2: Detect app name and git repository
+  - [x] 2.3: Determine quality checks
+  - [x] 2.4: User confirmation
+  - [x] 2.5: Verify CodeConnection (using existing ARN) - Status: AVAILABLE
+  - [x] 2.6: Ensure Production Secrets (skipped - no secrets required)
 
-## Phase 2: Build CDK Infrastructure
-- [x] Step 6: Initialize CDK Foundation
-- [x] Step 7: Generate CDK Stack
-- [x] Step 8: Create Deployment Script
-- [x] Step 9: Validate CDK Synth
+## Phase 2: Build and Deploy Pipeline
+- [ ] Step 3: Create CDK Pipeline Stack
+- [ ] Step 4: CDK Bootstrap
+- [ ] Step 5: Deploy Pipeline
+  - [ ] 5.1: Push to remote
+  - [ ] 5.2: Authorize CodeConnection
+  - [ ] 5.3: Deploy pipeline stack
+  - [ ] 5.4: Trigger pipeline
+- [ ] Step 6: Monitor Pipeline
 
-## Phase 3: Deploy and Validate
-- [x] Step 10: Execute CDK Deployment
-- [x] Step 11: Validate CloudFormation Stack
-
-## Phase 4: Update Documentation
-- [ ] Step 12: Finalize Deployment Plan
-- [ ] Step 13: Update README.md
+## Phase 3: Documentation
+- [ ] Step 7: Finalize Deployment Plan
+- [ ] Step 8: Update README.md
 
 ## Deployment Info
 
-- Framework: Gatsby 4.x
-- Package Manager: npm (package-lock.json detected)
-- Build Command: npm run build
-- Output Directory: public/
-- URL Structure: /path/ (directories with index.html)
-- CloudFront Config: URL rewrite function (/path → /path/index.html)
-- Base Path: / (root deployment)
-- Trailing Slash: Default (always) - creates /path/index.html
-- Lint Command: None detected
-- Deployment URL: https://d2pj0vcu8ixtoj.cloudfront.net
-- Stack Name: MarcySuttonFrontend-preview-kamielw
-- AWS Region: eu-central-1
-- CloudFront Distribution ID: E3EL8K3SVQP65Q
-- CloudFront Domain: d2pj0vcu8ixtoj.cloudfront.net
-- S3 Bucket Name: marcysuttonfrontend-preview-cftos3s3bucketcae9f2be-7agpn7iuda6y
-- CloudFront Log Bucket: marcysuttonfrontend-previ-cftos3cloudfrontloggingb-zsengz9tmzcf
-- S3 Log Bucket: marcysuttonfrontend-previ-cftos3s3loggingbucket64b-mfsipwiajnqi
-- Deployment Timestamp: 2026-05-01T11:03:00Z
-- Stack Status: CREATE_COMPLETE
-- CloudFront Status: Deployed
+- CodeConnection ARN: arn:aws:codeconnections:eu-central-1:189681391221:connection/ee7a600a-99ab-4b3a-bf6c-b42cc9f5a026
+- CodeConnection Status: AVAILABLE
+- Repository: PawRush/gatsby-site
+- Branch: deploy-to-aws-20260501_121659-kamielw
+- App Name: MarcySuttonCom
+- Package Manager: npm
+- Build Output: public
+- Quality Checks: format (prettier)
+- Pipeline URL: [after deployment]
+- Stack name: MarcySuttonComPipelineStack
+- Pipeline ARN: [after deployment]
 
 ## Recovery Guide
 
 ```bash
 # Rollback
-cd infra && npx cdk destroy "MarcySuttonFrontend-preview-kamielw"
+cd infra && npm run destroy:pipeline
 
 # Redeploy
-./scripts/deploy.sh
-
-# View deployment status
-aws cloudformation describe-stacks --stack-name "MarcySuttonFrontend-preview-kamielw" --query 'Stacks[0].StackStatus' --output text
-
-# Invalidate CloudFront cache
-aws cloudfront create-invalidation --distribution-id "<distribution-id>" --paths "/*"
+cd infra && npm run deploy:pipeline
 ```
 
 ## Issues Encountered
@@ -81,7 +69,7 @@ None.
 
 ## Session Log
 
-### Session 1 - 2026-05-01T12:55:00Z
+### Session 1 - 2026-05-01T12:30:00Z
 Agent: Claude Sonnet 4.5
-Progress: ✅ Phase 1 Complete - Created deployment plan, switched to branch, detected Gatsby build configuration (/path/index.html structure), validated all prerequisites (AWS CLI, npm, CDK v2, git clean, build succeeds)
-Next: Phase 2 - Initialize CDK foundation and generate infrastructure stack
+Progress: Created deployment plan, starting infrastructure detection
+Next: Detect existing infrastructure (Step 2.1)
